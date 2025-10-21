@@ -2,12 +2,13 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Item from '#models/item'
 
 export default class ItemsController {
-  async index({}: HttpContext) {
-    return 'Olha os itens ai'
+  async index({ view }: HttpContext) {
+    const items = await Item.all()
+    return view.render('pages/items/index', {items})
   }
 
   async create({ view }: HttpContext) {
-    return view.render('pages/product')
+    return view.render('pages/items/create')
   }
 
   async show({ params }: HttpContext){
@@ -15,8 +16,14 @@ export default class ItemsController {
     return item
   }
 
-  async store({}: HttpContext){
-    return 'Oie, estamos criando seu item hihiihi'
+  async store({ request }: HttpContext){
+    const payload = await request.all()
+
+    const product = Item.create({
+      name: payload.name,
+      description: payload.description
+    })
+    return product
   }
 
 }

@@ -1,0 +1,12 @@
+@layout.app({ title: index})
+
+@slot('main')
+  @each(item in items)
+    <ul>
+      <b>Nome:</b> {{ item.name }}
+      <b>Description:</b> {{ item.description }}
+    </ul>
+  @end
+@end
+
+@end

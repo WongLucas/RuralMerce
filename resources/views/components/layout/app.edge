@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ title || "Default" }}</title>
+</head>
+<body>
+  @include('components/layout/partials/header')
+
+  <main>
+    {{{ await $slots.main() }}}
+  </main>
+
+  @include('components/layout/partials/footer')
+</body>
+</html>

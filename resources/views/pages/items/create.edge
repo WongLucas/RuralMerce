@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Produtos</title>
+  <title>Items</title>
   <meta charset="UTF-8">
 </head>
 <body>
   <form action="{{ route('item.store') }}" method="post">
-    <span>Pode nao man</span>
-    <button type="submit">Enviar</button>
+    <input type="text" name="name">
+    <input type="text" name="description">
+    <button type="submit">Criar</button>
   </form>
 </body>
 </html>
