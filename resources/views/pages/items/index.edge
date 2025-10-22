@@ -5,6 +5,7 @@
     <ul>
       <b>Nome:</b> {{ item.name }}
       <b>Description:</b> {{ item.description }}
+      <a href="{{ route('item.show', [item.id]) }}">ver</a>
     </ul>
   @end
 @end

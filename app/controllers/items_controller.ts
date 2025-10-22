@@ -11,19 +11,19 @@ export default class ItemsController {
     return view.render('pages/items/create')
   }
 
-  async show({ params }: HttpContext){
-    const item = Item.find( params.id )
-    return item
+  async show({ params, view }: HttpContext){
+    const item = await Item.find( params.id )
+    return view.render('pages/items/show', {item})
   }
 
-  async store({ request }: HttpContext){
+  async store({ request, response }: HttpContext){
     const payload = await request.all()
 
-    const product = Item.create({
+    const product = await Item.create({
       name: payload.name,
       description: payload.description
     })
-    return product
+    return response.redirect().toRoute('item.show', {id: product.id })
   }
 
 }
