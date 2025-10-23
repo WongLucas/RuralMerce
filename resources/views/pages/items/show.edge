@@ -3,6 +3,9 @@
   @slot('main')
     <p>{{ item.name }}</p>
     <p>{{ item.description }}</p>
+  @form({action: route('item.destroy', { id: item.id }, { qs: { _method: 'DELETE' }})})
+      <button type="submit" class="bg-red-400">Deletar</button>
+    @end
   @end
 
 @end

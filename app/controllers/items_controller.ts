@@ -43,4 +43,10 @@ export default class ItemsController {
     return response.redirect().toRoute('item.show', {id: params.id})
   }
 
+  async destroy({ params, response }:HttpContext){
+    const item = await Item.findOrFail(params.id)
+    await item.delete()
+
+    return response.redirect().toRoute('item.index')
+  }
 }
