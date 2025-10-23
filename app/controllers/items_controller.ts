@@ -26,4 +26,21 @@ export default class ItemsController {
     return response.redirect().toRoute('item.show', {id: product.id })
   }
 
+  async edit({ params, view }: HttpContext){
+    const item = await Item.find(params.id)
+    console.log(item)
+
+    return view.render('pages/items/edit', {item})
+  }
+
+  async update({ params, request, response }:HttpContext){
+    const item = await Item.findOrFail(params.id)
+    const payload = await request.only(['name', 'description'])
+
+    item.merge(payload)
+    await item.save()
+
+    return response.redirect().toRoute('item.show', {id: params.id})
+  }
+
 }

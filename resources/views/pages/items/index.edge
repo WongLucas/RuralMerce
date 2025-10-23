@@ -1,14 +1,12 @@
 @layout.app({ title: index})
 
 @slot('main')
-<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-  Button
-</button>
   @each(item in items)
     <ul>
       <b>Nome:</b> {{ item.name }}
       <b>Description:</b> {{ item.description }}
       <a href="{{ route('item.show', [item.id]) }}">ver</a>
+      <a href="{{ route('item.edit', [item.id]) }}">editar</a>
     </ul>
   @end
 @end
