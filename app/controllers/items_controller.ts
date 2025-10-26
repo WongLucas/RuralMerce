@@ -1,5 +1,10 @@
 import type { HttpContext } from '@adonisjs/core/http'
+//import vine, { errors } from '@vinejs/vine'
+
+import {createItemValidator} from '#validators/item'
+
 import Item from '#models/item'
+import Category from '#models/category'
 
 export default class ItemsController {
   async index({ view }: HttpContext) {
@@ -8,7 +13,9 @@ export default class ItemsController {
   }
 
   async create({ view }: HttpContext) {
-    return view.render('pages/items/create')
+    const categories = await Category.all()
+    console.log(categories)
+    return view.render('pages/items/create', {categories})
   }
 
   async show({ params, view }: HttpContext){
@@ -17,7 +24,7 @@ export default class ItemsController {
   }
 
   async store({ request, response }: HttpContext){
-    const payload = await request.all()
+    const payload = await request.validateUsing(createItemValidator)
 
     const product = await Item.create({
       name: payload.name,
@@ -28,7 +35,6 @@ export default class ItemsController {
 
   async edit({ params, view }: HttpContext){
     const item = await Item.find(params.id)
-    console.log(item)
 
     return view.render('pages/items/edit', {item})
   }

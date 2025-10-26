@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Items</title>
-  <meta charset="UTF-8">
-</head>
-<body>
-  <form action="{{ route('item.store') }}" method="post">
-    <input type="text" name="name">
-    <input type="text" name="description">
-    <button type="submit">Criar</button>
-  </form>
-</body>
-</html>
+@layout.app()
+  @slot('main')
+    @form({ action:route('item.store') })
+      @each(category in categories)
+        {{ category.name }}
+      @end
+      <input type="text" name="name" class="bg-amber-200">
+      <input type="text" name="description" class="bg-amber-300">
+      <button type="submit">Criar</button>
+    @end
+  @end
+@end
