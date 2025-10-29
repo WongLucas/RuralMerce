@@ -10,8 +10,7 @@ export default class CategoriesController {
     })
   }
   async create({}:HttpContext){
-    await Item.create({name: 'nome', description: 'Oloquinho'})
-    await Category.createMany([{name: 'haha'},{name: 'hihi'},{name: 'huhu'}])
+    await Category.createMany([{name: 'angel'},{name: 'devil'},{name: 'shop'}])
   }
   async gay({}:HttpContext){
     const item = await Item.findOrFail(1)

@@ -10,6 +10,14 @@ export const createItemValidator = vine.compile(
         table:'items',
         column:'name',
       }),
-    description: vine.string().trim().minLength(4)
+
+    description: vine
+      .string()
+      .trim()
+      .minLength(4),
+
+    categories: vine
+      .array(vine.number())
+      .optional()
   })
 )

@@ -1,11 +1,32 @@
 @layout.app()
   @slot('main')
     @form({ action:route('item.store') })
-      @each(category in categories)
-        {{ category.name }}
-      @end
-      <input type="text" name="name" class="bg-amber-200">
-      <input type="text" name="description" class="bg-amber-300">
+      <div>
+        <label>Nome: </label>
+        <input type="text" name="name" class="bg-amber-200">
+      </div>
+
+      <div>
+        <label>Descrição: </label>
+        <input type="text" name="description" class="bg-amber-300">
+      </div>
+
+      <div>
+        <label>Categorias:</label>
+        <div>
+          @each(category in categories)
+            <label >
+              <input
+              type="checkbox"
+              name="categories[]"
+              value="{{ category.id }}"
+              >
+              {{ category.name }}
+            </label>
+          @end
+        </div>
+      </div>
+
       <button type="submit">Criar</button>
     @end
   @end

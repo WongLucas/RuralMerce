@@ -1,8 +1,35 @@
 @layout.app({title: 'edit'})
   @slot('main')
     @form({action: route('item.update', { id: item.id }, { qs: { _method: 'PUT' }})})
-      <input type="text" name="name" value="{{ item.name }}">
-      <input type="text" name="description" value="{{ item.description }}">
+      <div>
+        <label>Nome:</label>
+        <input type="text" name="name" value="{{ item.name }}">
+      </div>
+
+      <div>
+        <label >Descrição:</label>
+        <input type="text" name="description" value="{{ item.description }}">
+      </div>
+
+      <div>
+        <label>Categorias:</label>
+        <div>
+          @each(category in categories)
+            <label >
+              <input
+              type="checkbox"
+              name="categories[]"
+              value="{{ category.id }}"
+              @if(item.categories.find(cat => cat.id === category.id ))
+                checked
+              @end
+              >
+              {{ category.name }}
+            </label>
+          @end
+        </div>
+      </div>
+
       <button type="submit">editar</button>
     @end
   @end

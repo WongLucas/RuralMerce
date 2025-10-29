@@ -14,7 +14,6 @@ export default class ItemsController {
 
   async create({ view }: HttpContext) {
     const categories = await Category.all()
-    console.log(categories)
     return view.render('pages/items/create', {categories})
   }
 
@@ -26,25 +25,34 @@ export default class ItemsController {
   async store({ request, response }: HttpContext){
     const payload = await request.validateUsing(createItemValidator)
 
-    const product = await Item.create({
+    const item = await Item.create({
       name: payload.name,
-      description: payload.description
+      description: payload.description,
     })
-    return response.redirect().toRoute('item.show', {id: product.id })
+
+    if(payload.categories && payload.categories.length > 0){
+      await item.related('categories').attach(payload.categories)
+    }
+
+    return response.redirect().toRoute('item.show', {id: item.id })
   }
 
   async edit({ params, view }: HttpContext){
-    const item = await Item.find(params.id)
+    const item = await Item.query().where('id', params.id).preload('categories').firstOrFail()
+    const categories = await Category.all()
 
-    return view.render('pages/items/edit', {item})
+    return view.render('pages/items/edit', {item, categories})
   }
 
   async update({ params, request, response }:HttpContext){
     const item = await Item.findOrFail(params.id)
     const payload = await request.only(['name', 'description'])
+    const categoryIds = request.input('categories', [])
 
     item.merge(payload)
     await item.save()
+
+    await item.related('categories').sync(categoryIds)
 
     return response.redirect().toRoute('item.show', {id: params.id})
   }
