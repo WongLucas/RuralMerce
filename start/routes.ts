@@ -2,10 +2,13 @@ import router from '@adonisjs/core/services/router'
 
 import ItemsController from '#controllers/items_controller'
 import CategoriesController from '#controllers/categories_controller'
+import UsersController from '#controllers/users_controller'
 
 router.get('/', async ({ view }) =>{
   return view.render('pages/home')
 }).as('index')
+
+router.get('/register', [UsersController]).as('user.create')
 
 router.resource('/item', ItemsController)
 
