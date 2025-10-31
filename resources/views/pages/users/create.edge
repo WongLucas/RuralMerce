@@ -1,0 +1,23 @@
+@layout.app({title: Register})
+  @slot('main')
+    @form({action: route('user.store')})
+      <div class="flex justify-center">
+        <div class="flex flex-col">
+          <div>
+            <label>Nome completo:</label>
+            <input type="text" name="fullName" class="border p-1 rounded-2xl">
+          </div>
+          <div>
+            <label>Email:</label>
+            <input type="email" name="email" class="border p-1 rounded-2xl">
+          </div>
+          <div>
+            <label>Senha:</label>
+            <input type="password" name="password" class="border p-1 rounded-2xl">
+          </div>
+          <button type="submit">CRIAR</button>
+        </div>
+      </div>
+    @end
+  @end
+@end

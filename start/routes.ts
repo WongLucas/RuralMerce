@@ -8,7 +8,8 @@ router.get('/', async ({ view }) =>{
   return view.render('pages/home')
 }).as('index')
 
-router.get('/register', [UsersController]).as('user.create')
+router.get('/register', [UsersController, 'create']).as('user.create')
+router.post('/register', [UsersController, 'store']).as('user.store')
 
 router.resource('/item', ItemsController)
 
