@@ -6,7 +6,7 @@ export default class UsersController {
     return view.render('pages/users/create')
   }
 
-  async store({ request }:HttpContext){
+  async store({ auth, response, request }:HttpContext){
     const payload = request.body()
     const user = await User.create({
       fullName: payload.fullName,
@@ -14,6 +14,8 @@ export default class UsersController {
       password: payload.password
     })
 
-    return user
+    await auth.use('web').login(user)
+
+    return response.redirect().toRoute('index')
   }
 }

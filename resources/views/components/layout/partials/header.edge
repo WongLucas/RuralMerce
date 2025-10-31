@@ -12,10 +12,23 @@
       </nav>
     </div>
     <div class="basis-1/6 flex justify-end">
-      <div class="mx-8">
-        <a href="{{ route('user.create') }}">Register</a>
-      </div>
-      <div class="mx-8">Coisas</div>
+      @if(auth?.user)
+        <div class="mx-8">
+          <a href="#">{{ auth.user.email }}</a>
+        </div>
+        <div class="mx-8">
+          @form({action: route('logout')})
+            <button type="submit">logout</button>
+          @end
+        </div>
+      @else
+        <div class="mx-8">
+          <a href="{{ route('user.create') }}">Register</a>
+        </div>
+        <div class="mx-8">
+          Coisas
+        </div>
+      @end
     </div>
   </div>
 </header>
