@@ -1,0 +1,13 @@
+@layout.app({title: Profile})
+  @slot('main')
+    <div class="flex justify-center">
+      <div class="flex flex-col">
+        <div>{{ user.fullName }}</div>
+        <div>{{ user.email }}</div>
+        @if(auth.user.id == user.id)
+          <div>EDITAR PERFIL</div>
+        @end
+      </div>
+    </div>
+  @end
+@end

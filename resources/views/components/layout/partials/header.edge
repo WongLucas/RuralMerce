@@ -14,7 +14,7 @@
     <div class="basis-1/6 flex justify-end">
       @if(auth?.user)
         <div class="mx-8">
-          <a href="#">{{ auth.user.email }}</a>
+          <a href="{{ route('profile.show', {id: auth.user.id}) }}">{{ auth.user.id }}</a>
         </div>
         <div class="mx-8">
           @form({action: route('logout')})
@@ -26,7 +26,7 @@
           <a href="{{ route('user.create') }}">Register</a>
         </div>
         <div class="mx-8">
-          Coisas
+          <a href="{{ route('login.create') }}">Login</a>
         </div>
       @end
     </div>

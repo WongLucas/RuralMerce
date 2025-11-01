@@ -4,6 +4,7 @@ import ItemsController from '#controllers/items_controller'
 import CategoriesController from '#controllers/categories_controller'
 import UsersController from '#controllers/users_controller'
 import SessionController from '#controllers/session_controller'
+import ProfilesController from '#controllers/profiles_controller'
 
 import { middleware } from './kernel.js'
 
@@ -25,6 +26,8 @@ router.group(() =>{
   router.get('/', async ({ auth, view }) =>{
     return view.render('pages/home', {user: auth.user})
   }).as('index')
+
+  router.get('/profile/:id', [ProfilesController, 'show']).as('profile.show')
 }).use(middleware.silentAuth())
 
 
