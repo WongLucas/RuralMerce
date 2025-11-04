@@ -21,15 +21,11 @@ router.group(() => {
   router.post('/logout', [SessionController, 'destroy']).as('logout').use(middleware.auth())
 }).use(middleware.auth())
 
-//Rotas que podem ou não estar logadas
-router.group(() =>{
-  router.get('/', async ({ auth, view }) =>{
-    return view.render('pages/home', {user: auth.user})
-  }).as('index')
+router.get('/', async ({ auth, view }) =>{
+  return view.render('pages/home', {user: auth.user})
+}).as('index')
 
-  router.get('/profile/:id', [ProfilesController, 'show']).as('profile.show')
-}).use(middleware.silentAuth())
-
+router.get('/profile/:id', [ProfilesController, 'show']).as('profile.show')
 
 router.get('/login', [SessionController, 'create']).as('login.create')
 router.post('/login', [SessionController, 'store']).as('login.store')
