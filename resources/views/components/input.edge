@@ -1,1 +1,5 @@
-<input class="input" {{ $props.toAttrs() }}>
+@let(className = required && flashMessages.has('errors')
+? 'w-full border border-red-500 rounded-lg p-2 mt-1 focus:ring focus:ring-red-200'
+: 'w-full border border-gray-300 rounded-lg p-2 mt-1 focus:ring focus:ring-blue-200')
+
+<input {{ $props.except(['class']).toAttrs()}} class="{{className}}">
