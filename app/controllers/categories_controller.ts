@@ -12,9 +12,4 @@ export default class CategoriesController {
   async create({}:HttpContext){
     await Category.createMany([{name: 'angel'},{name: 'devil'},{name: 'shop'}])
   }
-  async gay({}:HttpContext){
-    const item = await Item.findOrFail(1)
-    await item.related('categories').attach([1,2,3])
-
-  }
 }

@@ -7,7 +7,7 @@ import Item from '#models/item'
 import Category from '#models/category'
 
 export default class ItemsController {
-  async index({ auth, view }: HttpContext) {
+  async index({ view }: HttpContext) {
     const items = await Item.all()
     return view.render('pages/items/index', {items})
   }
