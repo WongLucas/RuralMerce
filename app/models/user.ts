@@ -1,8 +1,13 @@
 import { DateTime } from 'luxon'
-import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+
+import { afterCreate, BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
+import type { HasOne } from '@adonisjs/lucid/types/relations'
+
+import hash from '@adonisjs/core/services/hash'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
+
+import Profile from './profile.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -24,6 +29,17 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column({ serializeAs: null })
   declare password: string
+
+  @hasOne(() => Profile)
+  declare profile: HasOne<typeof Profile>
+
+  @afterCreate()
+  static async createProfile(user: User){
+    await user.related('profile').create({
+      bio:'',
+      nick_name:'',
+    })
+  }
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -1,0 +1,20 @@
+@layout.app()
+@slot('main')
+
+  @form({action: route('profile.update', { id: profile.id }, { qs: { _method: 'PUT'}})})
+    <h1 class="font-extrabold ">Editar</h1>
+    <div class="flex flex-col">
+      <div class="">
+        <label>Bio: </label>
+        <textarea name="bio" cols="30" rows="10" >{{ profile.bio? profile.bio : '' }}</textarea>
+      </div>
+      <div>
+        <label>Nick: </label>
+        <input value="{{ profile.nick_name? profile.nick_name : '' }}" type="text" name="nick_name" class="p-2 border rounded-2xl">
+      </div>
+    </div>
+    <button type="submit" class="border rounded-2xl p-2 hover:ring-8">Editar</button>
+  @end
+
+@end
+@end

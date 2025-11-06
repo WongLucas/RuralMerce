@@ -1,12 +1,20 @@
 @layout.app({title: Profile})
   @slot('main')
-    <div class="flex justify-center">
+    <div class="flex">
       <div class="flex flex-col">
-        <div>{{ user.fullName }}</div>
-        <div>{{ user.email }}</div>
-        @if(auth.user.id == user.id)
-          <div>EDITAR PERFIL</div>
-        @end
+        <div>
+          <div>Profile name: {{ profile.nick_name? profile.nick_name : 'Nome não definido ainda' }}</div>
+        </div>
+        <div>
+          <div>Profile bio: {{ profile.bio? profile.bio : 'Bio não definido ainda' }}</div>
+        </div>
+        <div>
+          @if( auth.user && auth.user.id == profile.id)
+            <div class="border rounded-2xl p-2">
+              <a href="{{ route('profile.edit', {id: profile.id}) }}">Editar</a>
+            </div>
+          @end
+        </div>
       </div>
     </div>
   @end

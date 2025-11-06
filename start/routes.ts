@@ -26,6 +26,8 @@ router.get('/', async ({ auth, view }) =>{
 }).as('index')
 
 router.get('/profile/:id', [ProfilesController, 'show']).as('profile.show')
+router.get('/profile/edit/:id', [ProfilesController, 'edit']).as('profile.edit')
+router.put('/profile.edit/:id', [ProfilesController, 'update']).as('profile.update')
 
 router.get('/login', [SessionController, 'create']).as('login.create')
 router.post('/login', [SessionController, 'store']).as('login.store')
