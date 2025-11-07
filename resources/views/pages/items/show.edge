@@ -1,11 +1,29 @@
 @layout.app({title: Editar})
 
   @slot('main')
-    <p>{{ item.name }}</p>
-    <p>{{ item.description }}</p>
-  @form({action: route('item.destroy', { id: item.id }, { qs: { _method: 'DELETE' }})})
-      <button type="submit" class="bg-red-400">Deletar</button>
-    @end
-  @end
+    <div>
+      <div><b>Nome: </b>{{ item.name }}</div>
+      <div><b>Descrição: </b>{{ item.description }}</div>
+    </div>
+    <div>
+      <div><b>Categorias: </b></div>
+      <ul class="list-disc pl-5">
+        @each(category in item.categories)
+          <li>{{ category.name }}</li>
+        @end
+      </ul>
+    </div>
 
+    <div>
+      @form({action: route('item.edit', { id: item.id }, { qs: { _method: 'GET' }})})
+          <button type="submit" class="bg-blue-400 p-2 rounded-2xl">Editar</button>
+      @end
+    </div>
+
+    <div>
+      @form({action: route('item.destroy', { id: item.id }, { qs: { _method: 'DELETE' }})})
+        <button type="submit" class="bg-red-400 p-2 rounded-2xl">Deletar</button>
+      @end
+    </div>
+  @end
 @end

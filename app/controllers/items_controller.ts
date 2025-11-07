@@ -18,7 +18,8 @@ export default class ItemsController {
   }
 
   async show({ params, view }: HttpContext){
-    const item = await Item.find( params.id )
+    const item = await Item.findOrFail( params.id )
+    await item.load('categories')
     return view.render('pages/items/show', {item})
   }
 
