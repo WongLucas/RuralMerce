@@ -19,6 +19,6 @@ export default class UsersController {
 
     await auth.use('web').login(user)
 
-    return response.redirect().toRoute('index')
+    return response.redirect().toRoute('profile.show', {id: user.id})
   }
 }
