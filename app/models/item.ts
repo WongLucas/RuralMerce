@@ -1,7 +1,6 @@
-import Category from '#models/category'
 import { DateTime } from 'luxon'
-import type { ManyToMany } from '@adonisjs/lucid/types/relations'
-import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 
 export default class Item extends BaseModel {
   @column({ isPrimary: true })
@@ -13,7 +12,8 @@ export default class Item extends BaseModel {
   @column()
   declare description: string
 
-  declare categories: ManyToMany<typeof Category>
+  @belongsTo(() => Item)
+  declare item: BelongsTo<typeof Item>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
