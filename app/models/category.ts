@@ -10,12 +10,12 @@ export default class Category extends BaseModel {
   @column()
   declare name: string
 
-  @hasMany(() => Item)
-  declare items: HasMany<typeof Item>
-
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @hasMany(() => Item)
+  declare items: HasMany<typeof Item>
 }
