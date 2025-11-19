@@ -18,28 +18,29 @@ export default class ItemsController {
   }
 
   async show({ params, view }: HttpContext){
-    const item = await Item.findOrFail( params.id )
-    await item.load('categories')
+    const item = await Item.query()
+    .where('id', params.id)
+    .preload('category')
+    .firstOrFail()
+
     return view.render('pages/items/show', {item})
   }
 
   async store({ request, response }: HttpContext){
-    const payload = await request.validateUsing(createItemValidator)
+    const payload = await request.body()
+    //const payload = await request.validateUsing(createItemValidator)
 
     const item = await Item.create({
       name: payload.name,
       description: payload.description,
+      categoryId: payload.category,
     })
-
-    if(payload.categories && payload.categories.length > 0){
-      await item.related('categories').attach(payload.categories)
-    }
 
     return response.redirect().toRoute('item.show', {id: item.id })
   }
 
   async edit({ params, view }: HttpContext){
-    const item = await Item.query().where('id', params.id).preload('categories').firstOrFail()
+    const item = await Item.query().where('id', params.id).firstOrFail()
     const categories = await Category.all()
 
     return view.render('pages/items/edit', {item, categories})
@@ -47,13 +48,13 @@ export default class ItemsController {
 
   async update({ params, request, response }:HttpContext){
     const item = await Item.findOrFail(params.id)
-    const payload = await request.only(['name', 'description'])
-    const categoryIds = request.input('categories', [])
+    const payload = await request.only(['name', 'description', 'category'])
 
-    item.merge(payload)
+    item.name = payload.name
+    item.description = payload.description
+    item.categoryId = payload.category
+
     await item.save()
-
-    await item.related('categories').sync(categoryIds)
 
     return response.redirect().toRoute('item.show', {id: params.id})
   }

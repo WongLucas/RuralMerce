@@ -6,11 +6,9 @@
       <div><b>Descrição: </b>{{ item.description }}</div>
     </div>
     <div>
-      <div><b>Categorias: </b></div>
+      <div><b>Categoria: </b></div>
       <ul class="list-disc pl-5">
-        @each(category in item.categories)
-          <li>{{ category.name }}</li>
-        @end
+        <li>{{ item.category.name }}</li>
       </ul>
     </div>
 

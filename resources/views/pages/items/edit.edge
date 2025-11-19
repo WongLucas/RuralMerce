@@ -17,10 +17,10 @@
           @each(category in categories)
             <label >
               <input
-              type="checkbox"
-              name="categories[]"
+              type="radio"
+              name="category"
               value="{{ category.id }}"
-              @if(item.categories.find(cat => cat.id === category.id ))
+              @if(item.categoryId == category.id)
                 checked
               @end
               >

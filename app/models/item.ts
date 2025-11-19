@@ -13,12 +13,15 @@ export default class Item extends BaseModel {
   @column()
   declare description: string
 
+  @column()
+  declare categoryId: number | null
+
+  @belongsTo(() => Category)
+  declare category: BelongsTo<typeof Category>
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
-
-  @belongsTo(() => Category)
-  declare category: BelongsTo<typeof Category>
 }
