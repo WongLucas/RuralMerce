@@ -13,9 +13,6 @@ export default class Item extends BaseModel {
   @column()
   declare description: string
 
-  @manyToMany(() => Category, {
-    pivotTable: 'category_items'
-  })
   declare categories: ManyToMany<typeof Category>
 
   @column.dateTime({ autoCreate: true })
