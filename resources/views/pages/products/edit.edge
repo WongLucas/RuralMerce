@@ -1,0 +1,51 @@
+@layout.app()
+  @slot('main')
+
+    <div class="p-4 max-w-lg">
+      <h1 class="text-xl font-bold mb-4">Editar Produto: {{ product.name }}</h1>
+
+      @form({action: route('product.update', { id: product.id }, { qs: { _method: 'PUT' } })})
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-1">Nome do Item</label>
+          <input type="text" name="name" value="{{ product.name }}" required
+                 class="w-full border border-gray-400 p-2 rounded" />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-1">Descrição</label>
+          <textarea name="description" class="w-full border border-gray-400 p-2 rounded">{{ product.description || '' }}</textarea>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-1">Preço (R$)</label>
+          <input type="number" name="price" step="0.01" value="{{ product.price }}" required
+                 class="w-full border border-gray-400 p-2 rounded" />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-1">Estoque</label>
+          <input type="number" name="stock" value="{{ product.stock }}" required
+                 class="w-full border border-gray-400 p-2 rounded" />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-1">URL da Imagem</label>
+          <input type="text" name="image_url" value="{{ product.image_url || '' }}"
+                 class="w-full border border-gray-400 p-2 rounded" />
+        </div>
+
+        <div class="flex gap-2">
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Salvar Alterações
+          </button>
+
+          <a href="{{ route('product.index') }}" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">
+            Cancelar
+          </a>
+        </div>
+
+      @end
+    </div>
+
+  @end
+@end

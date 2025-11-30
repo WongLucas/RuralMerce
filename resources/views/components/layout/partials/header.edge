@@ -6,8 +6,10 @@
         <ul class="flex flex-row space-x-2">
           @!component('components/navLink', { href: route('index'), text: 'Home' })
           @!component('components/navLink', { href: route('item.index'), text: 'Items' })
+          @!component('components/navLink', { href: route('product.index'), text: 'Produtos' })
           @!component('components/navLink', { href: '#', text: 'Comprar' })
           @!component('components/navLink', { href: '#', text: 'Sobre' })
+
         </ul>
       </nav>
     </div>

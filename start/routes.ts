@@ -7,6 +7,7 @@ import SessionController from '#controllers/session_controller'
 import ProfilesController from '#controllers/profiles_controller'
 
 import { middleware } from './kernel.js'
+import ProductsController from '#controllers/products_controller'
 
 //Rotas que devem estar logadas
 router.group(() => {
@@ -35,7 +36,7 @@ router.post('/login', [SessionController, 'store']).as('login.store')
 router.get('/register', [UsersController, 'create']).as('user.create')
 router.post('/register', [UsersController, 'store']).as('user.store')
 
-
+router.resource('/products', ProductsController).as('product')
 
 
 

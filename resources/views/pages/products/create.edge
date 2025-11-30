@@ -1,0 +1,38 @@
+@layout.app()
+  @slot('main')
+    <h1>Novo Item de Isaac</h1>
+    @form({ action: route('product.store'), method: 'POST' })
+
+      <div>
+        <label for="name">Nome do Item</label>
+        <input type="text" name="name" id="name" placeholder="Ex: The D6" required />
+      </div>
+
+      <div>
+        <label for="description">Descrição</label>
+        <textarea name="description" id="description" placeholder="Efeito do item..."></textarea>
+      </div>
+
+      <div>
+        <label for="price">Preço (R$)</label>
+        {{-- step="0.01" permite centavos --}}
+        <input type="number" name="price" id="price" step="0.01" placeholder="15.00" required />
+      </div>
+
+      <div>
+        <label for="stock">Estoque</label>
+        <input type="number" name="stock" id="stock" value="1" required />
+      </div>
+
+      <div>
+        <label for="image_url">URL da Imagem</label>
+        <input type="text" name="image_url" id="image_url" placeholder="http://..." />
+      </div>
+
+      <div style="margin-top: 10px;">
+        <button type="submit">Salvar Produto</button>
+      </div>
+
+    @end
+  @end
+@end
