@@ -7,7 +7,8 @@ import type { HasOne } from '@adonisjs/lucid/types/relations'
 import hash from '@adonisjs/core/services/hash'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 
-import Profile from './profile.js'
+import Profile from '#models/profile'
+import Cart from '#models/cart'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -32,6 +33,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasOne(() => Profile)
   declare profile: HasOne<typeof Profile>
+
+  @hasOne(() => Cart)
+  declare cart: HasOne<typeof Cart>
 
   @afterCreate()
   static async createProfile(user: User){

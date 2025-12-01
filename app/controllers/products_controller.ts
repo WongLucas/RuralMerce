@@ -15,7 +15,7 @@ export default class ProductsController {
 
     const product = await Product.create(payload)
 
-    return product
+    return response.redirect().toRoute('product.show', {id: product.id})
   }
   async show({ params, view }: HttpContext) {
     const product = await Product.findOrFail(params.id)
@@ -34,7 +34,7 @@ export default class ProductsController {
     product.merge(payload)
     await product.save()
 
-    return product
+    return response.redirect().toRoute('product.show', {id: product.id})
   }
   async destroy({ params, response }: HttpContext) {
     const product = await Product.findOrFail(params.id)

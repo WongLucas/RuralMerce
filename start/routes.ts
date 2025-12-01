@@ -8,6 +8,7 @@ import ProfilesController from '#controllers/profiles_controller'
 
 import { middleware } from './kernel.js'
 import ProductsController from '#controllers/products_controller'
+import CartsController from '#controllers/carts_controller'
 
 //Rotas que devem estar logadas
 router.group(() => {
@@ -19,7 +20,13 @@ router.group(() => {
   router.post('/category',[CategoriesController, 'store']).as('category.store')
 
   //Rota para poder deslogar
-  router.post('/logout', [SessionController, 'destroy']).as('logout').use(middleware.auth())
+  router.post('/logout', [SessionController, 'destroy']).as('logout')
+
+  //Rota dos carrinhos
+  router.post('/cart/add/:id', [CartsController, 'add']).as('cart.add')
+  router.get('/cart', [CartsController, 'show']).as('cart.show')
+  router.put('/cart/item/:id/update', [CartsController, 'update']).as('cart.update')
+  router.delete('/cart/item/:id/delete', [CartsController, 'remove']).as('cart.remove')
 }).use(middleware.auth())
 
 router.get('/', async ({ auth, view }) =>{
