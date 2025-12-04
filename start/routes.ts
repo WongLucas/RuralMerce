@@ -27,6 +27,9 @@ router.group(() => {
   router.get('/cart', [CartsController, 'show']).as('cart.show')
   router.put('/cart/item/:id/update', [CartsController, 'update']).as('cart.update')
   router.delete('/cart/item/:id/delete', [CartsController, 'remove']).as('cart.remove')
+
+  //Rota dos produtos
+  router.resource('/products', ProductsController).as('product')
 }).use(middleware.auth())
 
 router.get('/', async ({ auth, view }) =>{
@@ -43,7 +46,6 @@ router.post('/login', [SessionController, 'store']).as('login.store')
 router.get('/register', [UsersController, 'create']).as('user.create')
 router.post('/register', [UsersController, 'store']).as('user.store')
 
-router.resource('/products', ProductsController).as('product')
 
 
 
