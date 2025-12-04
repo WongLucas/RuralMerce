@@ -18,6 +18,9 @@ export default class Profile extends BaseModel {
   @column()
   declare bio:string | null
 
+  @column()
+  declare avatar: string | null
+
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 

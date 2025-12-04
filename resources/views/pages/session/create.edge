@@ -1,41 +1,65 @@
-@layout.app({ title: 'Login' })
+@layout.app({ title: 'Login - Cain Store' })
   @slot('main')
-    <div class="h-svh flex items-center justify-center bg-[#563224] border-8">
-      <div class="w-full max-w-md bg-white shadow-lg rounded-xl p-8">
-        <h1 class="text-2xl font-semibold text-center mb-6">Acesse sua conta</h1>
+    {{-- Container Centralizado --}}
+    <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 
+      {{-- Card de Login (Dark Theme) --}}
+      <div class="w-full max-w-md bg-[#2f2425] shadow-2xl rounded-2xl p-8 border border-white/5">
+
+        {{-- Cabeçalho do Card --}}
+        <div class="text-center mb-8">
+          <h1 class="text-3xl font-bold text-gray-100 tracking-tight">Bem-vindo de volta</h1>
+          <p class="text-sm text-gray-400 mt-2">Acesse sua conta para continuar</p>
+        </div>
+
+        {{-- Alerta de Erro de Login (Estilizado para Dark Mode) --}}
         @if(flashMessages.has('loginError'))
-          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-sm text-center">
-            {{ flashMessages.get('loginError') }}
+          <div class="mb-6 bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm flex items-center gap-3" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            <span>{{ flashMessages.get('loginError') }}</span>
           </div>
         @end
 
-        @form({ action: route('login.store'), class: 'space-y-4' })
+        @form({ action: route('login.store'), class: 'space-y-6' })
 
+          {{-- Email --}}
           <div>
-            <label class="block text-sm font-medium text-gray-700">Email</label>
-            {{-- Note que removi o required do HTML para testar a validação do back-end se quiser --}}
+            <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+            {{-- O componente @!input agora cuida da cor do texto e fundo sozinho --}}
             @!input({ type: 'email', name: 'email', value: old('email') })
           </div>
 
+          {{-- Senha --}}
           <div>
-            <label class="block text-sm font-medium text-gray-700">Senha</label>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-sm font-medium text-gray-300">Senha</label>
+              {{-- Link opcional de "Esqueceu a senha" se quiser adicionar no futuro --}}
+              {{-- <a href="#" class="text-xs text-[#bd4044] hover:text-[#d65d61] transition-colors">Esqueceu a senha?</a> --}}
+            </div>
             @!input({ type: 'password', name: 'password' })
           </div>
 
+          {{-- Botão de Login --}}
           <button
             type="submit"
-            class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
-            Logar
+            class="w-full bg-gradient-to-r from-[#8a2f32] to-[#5e2124] text-white font-semibold py-3 px-4 rounded-lg hover:from-[#a3383c] hover:to-[#7a2b2e] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8a2f32] focus:ring-offset-[#2f2425] transition-all shadow-lg hover:shadow-red-900/20"
+          >
+            Entrar
           </button>
         @end
 
-        <p class="text-center text-sm text-gray-600 mt-4">
-          Não tem uma conta?
-          <a href="{{ route('user.create') }}" class="text-blue-500 hover:underline">
-            Cadastre-se
-          </a>
-        </p>
+        {{-- Rodapé --}}
+        <div class="mt-8 text-center border-t border-white/5 pt-6">
+          <p class="text-sm text-gray-500">
+            Não tem uma conta?
+            <a href="{{ route('user.create') }}" class="text-[#bd4044] hover:text-[#d65d61] font-medium hover:underline transition-colors">
+              Cadastre-se
+            </a>
+          </p>
+        </div>
+
       </div>
     </div>
   @end

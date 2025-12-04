@@ -1,21 +1,83 @@
-@layout.app({title: Profile})
-  @slot('main')
-    <div class="flex">
-      <div class="flex flex-col">
-        <div>
-          <div>Profile name: {{ profile.nick_name? profile.nick_name : 'Nome não definido ainda' }}</div>
-        </div>
-        <div>
-          <div>Profile bio: {{ profile.bio? profile.bio : 'Bio não definido ainda' }}</div>
-        </div>
-        <div>
-          @if( auth.user && auth.user.id == profile.id)
-            <div class="border rounded-2xl p-2">
-              <a href="{{ route('profile.edit', {id: profile.id}) }}">Editar</a>
+@layout.app({ title: 'Perfil de ' + (profile.nick_name ?? 'Usuário') })
+
+@slot('main')
+
+  <div class="flex justify-center">
+
+    <div class="w-full max-w-4xl bg-[#2f2425] rounded-2xl shadow-2xl overflow-hidden border border-white/5">
+
+      <div class="h-52 w-full bg-linear-to-r from-[#451d1f] via-[#22191a] to-black relative">
+        <div class="absolute inset-0 bg-black/20"></div>
+      </div>
+
+      <div class="px-8 pb-8">
+
+        <div class="relative flex flex-col sm:flex-row justify-between items-end -mt-20 mb-6">
+
+          <div class="relative group">
+            @if(profile.avatar)
+              <img
+                src="/uploads/{{ profile.avatar }}"
+                alt="Avatar de {{ profile.nick_name }}"
+                class="w-40 h-40 rounded-full border-[6px] border-[#2f2425] object-cover shadow-lg bg-[#22191a]"
+              >
+            @else
+              <div class="w-40 h-40 rounded-full border-[6px] border-[#2f2425] bg-[#1a1213] flex items-center justify-center shadow-lg text-gray-500 text-5xl font-bold select-none">
+                {{ profile.nick_name ? profile.nick_name.charAt(0).toUpperCase() : '?' }}
+              </div>
+            @end
+          </div>
+
+          @if(auth.user && auth.user.id === profile.userId)
+            <div class="mt-4 sm:mt-0 sm:mb-4">
+              <a href="{{ route('profile.edit', {id: profile.id}) }}"
+                 class="inline-flex items-center px-4 py-2 bg-white/5 border border-white/10 rounded-lg font-medium text-sm text-gray-200 hover:bg-white/10 hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/50">
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Editar Perfil
+              </a>
             </div>
           @end
         </div>
+
+        <div class="text-left">
+
+          <div>
+            <h1 class="text-3xl font-bold text-gray-100 tracking-tight">
+              {{ profile.nick_name ?? 'Usuário Desconhecido' }}
+            </h1>
+            <p class="text-gray-500 text-sm mt-1 flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-green-500/50"></span>
+              Membro desde {{ profile.createdAt.toFormat('dd/MM/yyyy') }}
+            </p>
+          </div>
+
+          <hr class="my-6 border-white/10">
+
+          <div class="max-w-2xl">
+            <h2 class="text-lg font-semibold text-gray-200 mb-3 flex items-center gap-2">
+              <span>Sobre</span>
+            </h2>
+
+            @if(profile.bio)
+              <p class="text-gray-400 leading-relaxed whitespace-pre-wrap text-base font-light">
+                {{ profile.bio }}
+              </p>
+            @else
+              <div class="bg-white/5 rounded-lg p-4 border border-white/5">
+                <p class="text-gray-500 italic text-sm">
+                  Este usuário é misterioso e ainda não escreveu uma biografia.
+                </p>
+              </div>
+            @end
+          </div>
+
+        </div>
+
       </div>
     </div>
-  @end
+  </div>
+@end
 @end

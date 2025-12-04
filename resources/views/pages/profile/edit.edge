@@ -1,19 +1,27 @@
 @layout.app()
 @slot('main')
 
-  @form({action: route('profile.update', { id: profile.id }, { qs: { _method: 'PUT'}})})
-    <h1 class="font-extrabold ">Editar</h1>
-    <div class="flex flex-col">
-      <div class="">
-        <label>Bio: </label>
-        <textarea name="bio" cols="30" rows="10" >{{ profile.bio? profile.bio : '' }}</textarea>
-      </div>
-      <div>
-        <label>Nick: </label>
-        <input value="{{ profile.nick_name? profile.nick_name : '' }}" type="text" name="nick_name" class="p-2 border rounded-2xl">
-      </div>
+  @form({action: route('profile.update', { id: profile.id }, { qs: { _method: 'PUT'}}), enctype:"multipart/form-data"})
+    <div class="mb-4">
+      <label>Nick Name</label>
+      <input type="text" name="nick_name" value="{{ profile.nick_name ?? '' }}" class="border p-2 w-full">
     </div>
-    <button type="submit" class="border rounded-2xl p-2 hover:ring-8">Editar</button>
+
+    <div class="mb-4">
+      <label>Bio</label>
+      <textarea name="bio" class="border p-2 w-full">{{ profile.bio ?? '' }}</textarea>
+    </div>
+
+    <div class="mb-4">
+      <label>Avatar</label>
+      <input type="file" name="avatar" class="border p-2 w-full">
+
+      @if(flashMessages.has('errors.avatar'))
+        <p class="text-red-500 text-sm">Erro ao enviar imagem</p>
+      @end
+    </div>
+
+    <button type="submit" class="bg-blue-500 text-white p-2 rounded">Salvar</button>
   @end
 
 @end

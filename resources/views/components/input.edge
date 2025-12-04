@@ -1,21 +1,46 @@
-{{-- 1. Primeiro, pegamos o nome do campo que foi passado para o componente --}}
+{{-- 1. Captura o nome e verifica se há erros --}}
 @let(fieldName = $props.get('name'))
-
-{{-- 2. Verificamos se existe erro APENAS para esse campo específico --}}
-{{-- O 'errors.' é o prefixo padrão do Adonis para erros de validação --}}
 @let(hasError = flashMessages.has('errors.' + fieldName))
 
-{{-- 3. Agora aplicamos a classe baseado no erro específico --}}
-@let(className = hasError
-  ? 'w-full border border-red-500 rounded-lg p-2 mt-1 focus:ring focus:ring-red-200'
-  : 'w-full border border-gray-300 rounded-lg p-2 mt-1 focus:ring focus:ring-blue-200'
+{{--
+  2. ESTILOS BASE (Sempre aplicados)
+  - bg-[#1a1213]: Fundo escuro
+  - text-gray-200: COR DO TEXTO CLARA (Corrige a ilegibilidade)
+  - placeholder-gray-500: Cor do placeholder ajustada para não ficar invisível
+--}}
+@let(baseClasses = 'w-full bg-[#1a1213] text-gray-200 placeholder-gray-500 rounded-lg p-3 outline-none transition-colors duration-200')
+
+{{--
+  3. LÓGICA DE ESTADO (Normal vs Erro)
+
+  CENÁRIO DE ERRO:
+  - Borda Vermelha (red-500)
+  - Ao focar: Mantém vermelho (para o usuário saber que aquele campo ainda é o problema)
+
+  CENÁRIO NORMAL:
+  - Borda sutil (white/10)
+  - Ao focar: Borda CINZA CLARO/BRANCO (gray-400).
+    Isso remove a confusão com o erro. Não fica vermelho.
+--}}
+@let(stateClasses = hasError
+  ? 'border border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500/50'
+  : 'border border-white/10 focus:border-gray-400 focus:ring-1 focus:ring-gray-400/30'
 )
 
-<input {{ $props.except(['class']).toAttrs() }} class="{{ className }}">
+<div>
+  <input
+    {{ $props.except(['class']).toAttrs() }}
+    class="{{ baseClasses }} {{ stateClasses }} {{ $props.get('class') ?? '' }}"
+  >
 
-{{-- DICA: Você já pode exibir a mensagem de erro aqui mesmo no componente --}}
-@if(hasError)
-  <span class="text-xs text-red-500 mt-1">
-    {{ flashMessages.get('errors.' + fieldName) }}
-  </span>
-@endif
+  {{-- Exibição da mensagem de erro --}}
+  @if(hasError)
+    <span class="text-xs text-red-400 mt-1 ml-1 flex items-center animate-pulse">
+      {{-- Ícone de alerta pequeno para reforçar --}}
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      {{ flashMessages.get('errors.' + fieldName) }}
+    </span>
+  @endif
+</div>
