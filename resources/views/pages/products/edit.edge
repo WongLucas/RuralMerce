@@ -1,50 +1,135 @@
-@layout.app()
+@layout.app({ title: 'Editar Produto - ' + product.name })
   @slot('main')
 
-    <div class="p-4 max-w-lg">
-      <h1 class="text-xl font-bold mb-4">Editar Produto: {{ product.name }}</h1>
+    <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 
-      @form({action: route('product.update', { id: product.id }, { qs: { _method: 'PUT' } })})
-        <div class="mb-4">
-          <label class="block text-gray-700 mb-1">Nome do Item</label>
-          <input type="text" name="name" value="{{ product.name }}" required
-                 class="w-full border border-gray-400 p-2 rounded" />
+      {{-- Card Principal --}}
+      <div class="w-full max-w-2xl bg-[#2f2425] shadow-2xl rounded-2xl p-8 border border-white/5">
+
+        <div class="mb-8 border-b border-white/5 pb-4">
+          <h1 class="text-2xl font-bold text-gray-100 tracking-tight">Editar Produto</h1>
+          <p class="text-sm text-gray-400 mt-1">Atualizando informações de <span class="text-[#bd4044]">{{ product.name }}</span></p>
         </div>
 
-        <div class="mb-4">
-          <label class="block text-gray-700 mb-1">Descrição</label>
-          <textarea name="description" class="w-full border border-gray-400 p-2 rounded">{{ product.description || '' }}</textarea>
-        </div>
+        {{--
+          FORMULÁRIO
+          - enctype="multipart/form-data": Essencial para enviar novas fotos
+          - method spoofing (?_method=PUT): Pois HTML forms só suportam GET/POST nativamente
+        --}}
+        @form({
+          action: route('product.update', { id: product.id }, { qs: { _method: 'PUT' } }),
+          enctype: 'multipart/form-data',
+          class: 'space-y-6'
+        })
 
-        <div class="mb-4">
-          <label class="block text-gray-700 mb-1">Preço (R$)</label>
-          <input type="number" name="price" step="0.01" value="{{ product.price }}" required
-                 class="w-full border border-gray-400 p-2 rounded" />
-        </div>
+          {{-- Nome do Produto --}}
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Nome do Item</label>
+            @!input({
+              type: 'text',
+              name: 'name',
+              required: true,
+              value: old('name') || product.name
+            })
+          </div>
 
-        <div class="mb-4">
-          <label class="block text-gray-700 mb-1">Estoque</label>
-          <input type="number" name="stock" value="{{ product.stock }}" required
-                 class="w-full border border-gray-400 p-2 rounded" />
-        </div>
+          {{-- Descrição (Textarea customizado para o tema Dark) --}}
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Descrição</label>
+            <textarea
+              name="description"
+              rows="4"
+              class="w-full bg-[#1a1213] text-gray-200 placeholder-gray-500 rounded-lg p-3 outline-none border border-white/10 focus:border-gray-400 focus:ring-1 focus:ring-gray-400/30 transition-all"
+            >{{ old('description') || product.description || '' }}</textarea>
+          </div>
 
-        <div class="mb-4">
-          <label class="block text-gray-700 mb-1">URL da Imagem</label>
-          <input type="text" name="image_url" value="{{ product.image_url || '' }}"
-                 class="w-full border border-gray-400 p-2 rounded" />
-        </div>
+          {{-- Grid para Preço e Estoque --}}
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-        <div class="flex gap-2">
-          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Salvar Alterações
-          </button>
+            {{-- Preço --}}
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Preço (R$)</label>
+              @!input({
+                type: 'number',
+                name: 'price',
+                step: '0.01',
+                required: true,
+                value: old('price') || product.price
+              })
+            </div>
 
-          <a href="{{ route('product.index') }}" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">
-            Cancelar
-          </a>
-        </div>
+            {{-- Estoque --}}
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Estoque Atual</label>
+              @!input({
+                type: 'number',
+                name: 'stock',
+                required: true,
+                value: old('stock') || product.stock
+              })
+            </div>
+          </div>
 
-      @end
+          {{-- SEÇÃO DE IMAGENS --}}
+          <div class="bg-[#1a1213] p-4 rounded-xl border border-white/5 mt-4">
+            <h3 class="text-sm font-medium text-gray-300 mb-3">Imagens do Produto</h3>
+
+            {{-- 1. Visualizar Imagens Existentes --}}
+            @if(product.images && product.images.length > 0)
+              <div class="flex gap-4 overflow-x-auto pb-2 mb-4">
+                @each(image in product.images)
+                  <div class="relative group shrink-0">
+                    <img
+                      src="/uploads/{{ image.path }}"
+                      class="w-20 h-20 object-cover rounded border border-white/10 opacity-80 group-hover:opacity-100 transition"
+                    >
+                    {{-- Futuramente você pode colocar um botão de remover individual aqui --}}
+                  </div>
+                @end
+              </div>
+            @else
+              <p class="text-xs text-gray-500 italic mb-4">Nenhuma imagem cadastrada atualmente.</p>
+            @end
+
+            {{-- 2. Upload de Novas Imagens --}}
+            <label class="block text-sm font-medium text-gray-400 mb-2">Adicionar Novas Fotos</label>
+            <input
+              type="file"
+              name="images[]"
+              multiple
+              class="block w-full text-sm text-gray-400
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-[#2f2425] file:text-gray-200
+                hover:file:bg-[#3d2f30]
+                cursor-pointer"
+            />
+            <p class="text-xs text-gray-500 mt-1">Selecione múltiplas imagens para adicionar à galeria.</p>
+          </div>
+
+          {{-- Botões de Ação --}}
+          <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-white/5">
+
+            {{-- Botão Salvar --}}
+            <button
+              type="submit"
+              class="flex-1 bg-linear-to-r from-[#8a2f32] to-[#5e2124] text-white font-semibold py-3 px-4 rounded-lg hover:from-[#a3383c] hover:to-[#7a2b2e] shadow-lg hover:shadow-red-900/20 transition-all focus:outline-none focus:ring-2 focus:ring-[#8a2f32]"
+            >
+              Salvar Alterações
+            </button>
+
+            {{-- Botão Cancelar --}}
+            <a
+              href="{{ route('product.index') }}"
+              class="flex-1 text-center bg-transparent border border-white/10 text-gray-300 font-semibold py-3 px-4 rounded-lg hover:bg-white/5 hover:text-white transition-all"
+            >
+              Cancelar
+            </a>
+          </div>
+
+        @end
+      </div>
     </div>
 
   @end

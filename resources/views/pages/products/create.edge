@@ -1,38 +1,133 @@
-@layout.app()
+@layout.app({ title: 'Novo Produto - Cain Store' })
   @slot('main')
-    <h1>Novo Item de Isaac</h1>
-    @form({ action: route('product.store'), method: 'POST' })
 
-      <div>
-        <label for="name">Nome do Item</label>
-        <input type="text" name="name" id="name" placeholder="Ex: The D6" required />
+    <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+
+      {{-- Card Principal --}}
+      <div class="w-full max-w-2xl bg-[#2f2425] shadow-2xl rounded-2xl p-8 border border-white/5">
+
+        {{-- Cabeçalho --}}
+        <div class="mb-8 border-b border-white/5 pb-4">
+          <h1 class="text-2xl font-bold text-gray-100 tracking-tight">Novo Item de Isaac</h1>
+          <p class="text-sm text-gray-400 mt-1">Adicione um novo artefato ao catálogo da loja.</p>
+        </div>
+
+        {{--
+          FORMULÁRIO
+          - enctype="multipart/form-data": OBRIGATÓRIO para envio de arquivos
+        --}}
+        @form({
+          action: route('product.store'),
+          method: 'POST',
+          enctype: 'multipart/form-data',
+          class: 'space-y-6'
+        })
+
+          {{-- Nome do Item --}}
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Nome do Item</label>
+            @!input({
+              type: 'text',
+              name: 'name',
+              placeholder: 'Ex: The D6',
+              required: true,
+              value: old('name')
+            })
+          </div>
+
+          {{-- Descrição --}}
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Descrição</label>
+            {{--
+               Textarea customizado para combinar com o input.edge
+               Copiamos as classes bg-[#1a1213], bordas e focos do seu componente
+            --}}
+            <textarea
+              name="description"
+              rows="4"
+              placeholder="Descreva o efeito do item..."
+              class="w-full bg-[#1a1213] text-gray-200 placeholder-gray-500 rounded-lg p-3 outline-none border border-white/10 focus:border-gray-400 focus:ring-1 focus:ring-gray-400/30 transition-all"
+            >{{ old('description') || '' }}</textarea>
+          </div>
+
+          {{-- Grid: Preço e Estoque --}}
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            {{-- Preço --}}
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Preço (R$)</label>
+              @!input({
+                type: 'number',
+                name: 'price',
+                step: '0.01',
+                placeholder: '15.00',
+                required: true,
+                value: old('price')
+              })
+            </div>
+
+            {{-- Estoque --}}
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Estoque Inicial</label>
+              @!input({
+                type: 'number',
+                name: 'stock',
+                value: '1',
+                required: true,
+                value: old('stock')
+              })
+            </div>
+          </div>
+
+          {{-- Upload de Imagens --}}
+          <div class="bg-[#1a1213] p-5 rounded-xl border border-white/5 mt-2">
+            <h3 class="text-sm font-medium text-gray-300 mb-2">Fotos do Produto</h3>
+
+            <div class="relative">
+              <input
+                type="file"
+                name="images[]"
+                multiple
+                class="block w-full text-sm text-gray-400
+                  file:mr-4 file:py-2.5 file:px-4
+                  file:rounded-lg file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-[#2f2425] file:text-gray-200 file:border-white/10
+                  hover:file:bg-[#3d2f30]
+                  cursor-pointer focus:outline-none"
+              />
+            </div>
+            <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Você pode selecionar múltiplos arquivos de uma vez.
+            </p>
+          </div>
+
+          {{-- Botões de Ação --}}
+          <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-white/5">
+
+            {{-- Botão Salvar (Gradiente) --}}
+            <button
+              type="submit"
+              class="flex-1 bg-linear-to-r from-[#8a2f32] to-[#5e2124] text-white font-semibold py-3 px-4 rounded-lg hover:from-[#a3383c] hover:to-[#7a2b2e] shadow-lg hover:shadow-red-900/20 transition-all focus:outline-none focus:ring-2 focus:ring-[#8a2f32]"
+            >
+              Criar Produto
+            </button>
+
+            {{-- Botão Cancelar --}}
+            <a
+              href="{{ route('product.index') }}"
+              class="flex-1 text-center bg-transparent border border-white/10 text-gray-300 font-semibold py-3 px-4 rounded-lg hover:bg-white/5 hover:text-white transition-all"
+            >
+              Cancelar
+            </a>
+          </div>
+
+        @end
       </div>
+    </div>
 
-      <div>
-        <label for="description">Descrição</label>
-        <textarea name="description" id="description" placeholder="Efeito do item..."></textarea>
-      </div>
-
-      <div>
-        <label for="price">Preço (R$)</label>
-        {{-- step="0.01" permite centavos --}}
-        <input type="number" name="price" id="price" step="0.01" placeholder="15.00" required />
-      </div>
-
-      <div>
-        <label for="stock">Estoque</label>
-        <input type="number" name="stock" id="stock" value="1" required />
-      </div>
-
-      <div>
-        <label for="image_url">URL da Imagem</label>
-        <input type="text" name="image_url" id="image_url" placeholder="http://..." />
-      </div>
-
-      <div style="margin-top: 10px;">
-        <button type="submit">Salvar Produto</button>
-      </div>
-
-    @end
   @end
 @end
