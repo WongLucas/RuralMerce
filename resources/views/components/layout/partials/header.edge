@@ -1,36 +1,75 @@
-<header class="bg-gray-100">
-  <div class="flex flex-row p-2.5">
-    <div class="basis-1/6">Logo</div>
-    <div class="basis-4/6 flex">
-      <nav class="hidden md:block">
-        <ul class="flex flex-row space-x-2">
-          @!component('components/navLink', { href: route('index'), text: 'Home' })
-          @!component('components/navLink', { href: route('item.index'), text: 'Items' })
-          @!component('components/navLink', { href: route('product.index'), text: 'Produtos' })
-          @!component('components/navLink', { href: '#', text: 'Comprar' })
-          @!component('components/navLink', { href: '#', text: 'Sobre' })
+<header class="bg-[#150f10] text-gray-100 border-b border-[#3a2c2e] sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
 
-        </ul>
-      </nav>
-    </div>
-    <div class="basis-1/6 flex justify-end">
-      @if(auth?.user)
-        <div class="mx-8">
-          <a href="{{ route('profile.show', {id: auth.user.id}) }}">{{ auth.user.id }}</a>
-        </div>
-        <div class="mx-8">
-          @form({action: route('logout')})
-            <button type="submit">logout</button>
+      {{-- 1. LOGO --}}
+      <div class="flex-shrink-0 flex items-center">
+        <a href="{{ route('index') }}" class="text-2xl font-bold text-white tracking-wide">
+          Cain<span class="text-red-500">Store</span>
+        </a>
+      </div>
+
+      {{-- 2. NAVEGAÇÃO CENTRAL --}}
+      <div class="hidden md:block">
+        <nav>
+          <ul class="flex space-x-4">
+            @!component('components/navLink', { href: route('index'), text: 'Início' })
+            @!component('components/navLink', { href: route('item.index'), text: 'Itens' })
+            @!component('components/navLink', { href: route('product.index'), text: 'Produtos' })
+            {{-- Destaque visual para ofertas --}}
+            <li>
+              <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-red-400 hover:text-red-300 transition-colors">
+                Ofertas
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      {{-- 3. ÁREA DO USUÁRIO E CARRINHO --}}
+      <div class="flex items-center space-x-6">
+
+        {{-- Ícone de Busca (Decorativo) --}}
+        <button class="text-gray-400 hover:text-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+
+        {{-- Ícone de Carrinho (Essencial para E-commerce) --}}
+        <a href="#" class="group flex items-center text-gray-400 hover:text-white transition relative">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          {{-- Bolinha de notificação (exemplo estático) --}}
+          <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold group-hover:bg-red-500">2</span>
+        </a>
+
+        {{-- Lógica de Autenticação --}}
+        <div class="border-l border-gray-700 pl-6 flex items-center space-x-4">
+          @if(auth?.user)
+            <div class="flex items-center space-x-3">
+              <a href="{{ route('profile.show', {id: auth.user.id}) }}" class="text-sm text-gray-300 hover:text-white font-medium">
+                {{ auth.user.fullName || 'Minha Conta' }}
+              </a>
+
+              @form({ action: route('logout') })
+                <button type="submit" class="text-xs text-red-400 hover:text-red-300 border border-red-900/30 hover:border-red-500 rounded px-2 py-1 transition">
+                  Sair
+                </button>
+              @end
+            </div>
+          @else
+            <a href="{{ route('login.create') }}" class="text-sm text-gray-300 hover:text-white font-medium">
+              Entrar
+            </a>
+            <a href="{{ route('user.create') }}" class="bg-white text-black px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200 transition shadow-md">
+              Cadastrar
+            </a>
           @end
         </div>
-      @else
-        <div class="mx-8">
-          <a href="{{ route('user.create') }}">Register</a>
-        </div>
-        <div class="mx-8">
-          <a href="{{ route('login.create') }}">Login</a>
-        </div>
-      @end
+      </div>
+
     </div>
   </div>
 </header>

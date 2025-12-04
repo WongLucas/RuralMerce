@@ -1,17 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8">
+  {{-- A meta tag viewport é OBRIGATÓRIA para responsividade mobile --}}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>{{ title || "Cain Store" }}</title>
+
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+{{--
+  bg-[#22191a]: Fundo escuro aplicado ao corpo todo (evita faixas brancas).
+  text-gray-100: Texto claro padrão para contrastar com o fundo escuro.
+  min-h-screen flex flex-col: Garante que o body ocupe 100% da altura e organiza header/main/footer em coluna.
+--}}
+<body class="bg-[#22191a] min-h-screen flex flex-col font-sans">
+
+  {{-- Header fixo no topo ou normal --}}
   @include('components/layout/partials/header')
 
-  <main>
-    {{{ await $slots.main() }}}
+  {{--
+    flex-grow: Faz o main ocupar todo o espaço vazio disponível, empurrando o footer para baixo.
+    w-full: Garante largura total disponível.
+  --}}
+  <main class="flex-grow w-full">
+    {{--
+      Container Centralizado:
+      max-w-7xl: Limita a largura em telas gigantes (padrão 1280px).
+      mx-auto: Centraliza o container.
+      px-4 sm:px-6: Dá respiro nas laterais para o conteúdo não colar na borda em celulares.
+      py-8: Espaçamento vertical padrão.
+    --}}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {{{ await $slots.main() }}}
+    </div>
   </main>
 
   @include('components/layout/partials/footer')
+
 </body>
 </html>

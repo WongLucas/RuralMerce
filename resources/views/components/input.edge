@@ -1,5 +1,21 @@
-@let(className = required && flashMessages.has('errors')
-? 'w-full border border-red-500 rounded-lg p-2 mt-1 focus:ring focus:ring-red-200'
-: 'w-full border border-gray-300 rounded-lg p-2 mt-1 focus:ring focus:ring-blue-200')
+{{-- 1. Primeiro, pegamos o nome do campo que foi passado para o componente --}}
+@let(fieldName = $props.get('name'))
 
-<input {{ $props.except(['class']).toAttrs()}} class="{{className}}">
+{{-- 2. Verificamos se existe erro APENAS para esse campo específico --}}
+{{-- O 'errors.' é o prefixo padrão do Adonis para erros de validação --}}
+@let(hasError = flashMessages.has('errors.' + fieldName))
+
+{{-- 3. Agora aplicamos a classe baseado no erro específico --}}
+@let(className = hasError
+  ? 'w-full border border-red-500 rounded-lg p-2 mt-1 focus:ring focus:ring-red-200'
+  : 'w-full border border-gray-300 rounded-lg p-2 mt-1 focus:ring focus:ring-blue-200'
+)
+
+<input {{ $props.except(['class']).toAttrs() }} class="{{ className }}">
+
+{{-- DICA: Você já pode exibir a mensagem de erro aqui mesmo no componente --}}
+@if(hasError)
+  <span class="text-xs text-red-500 mt-1">
+    {{ flashMessages.get('errors.' + fieldName) }}
+  </span>
+@endif

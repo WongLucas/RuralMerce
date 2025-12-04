@@ -1,19 +1,42 @@
-@layout.app({title: Register})
+@layout.app({ title: 'Login' })
   @slot('main')
-    @form({action: route('login.store')})
-      <div class="flex justify-center">
-        <div class="flex flex-col">
-          <div>
-            <label>Email:</label>
-            <input type="email" name="email" class="border p-1 rounded-2xl">
+    <div class="h-svh flex items-center justify-center bg-[#563224] border-8">
+      <div class="w-full max-w-md bg-white shadow-lg rounded-xl p-8">
+        <h1 class="text-2xl font-semibold text-center mb-6">Acesse sua conta</h1>
+
+        @if(flashMessages.has('loginError'))
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-sm text-center">
+            {{ flashMessages.get('loginError') }}
           </div>
+        @end
+
+        @form({ action: route('login.store'), class: 'space-y-4' })
+
           <div>
-            <label>Senha:</label>
-            <input type="password" name="password" class="border p-1 rounded-2xl">
+            <label class="block text-sm font-medium text-gray-700">Email</label>
+            {{-- Note que removi o required do HTML para testar a validação do back-end se quiser --}}
+            @!input({ type: 'email', name: 'email', value: old('email') })
           </div>
-          <button type="submit">CRIAR</button>
-        </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Senha</label>
+            @!input({ type: 'password', name: 'password' })
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+            Logar
+          </button>
+        @end
+
+        <p class="text-center text-sm text-gray-600 mt-4">
+          Não tem uma conta?
+          <a href="{{ route('user.create') }}" class="text-blue-500 hover:underline">
+            Cadastre-se
+          </a>
+        </p>
       </div>
-    @end
+    </div>
   @end
 @end

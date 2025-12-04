@@ -7,6 +7,13 @@ export const createUserValidator = vine.compile(
       table:'users',
       column:'email'
     }),
-    password: vine.string().trim().minLength(6)
+    password: vine.string().trim().minLength(3).confirmed()
+  })
+)
+
+export const loginValidator = vine.compile(
+  vine.object({
+    email: vine.string().email().normalizeEmail(),
+    password: vine.string(),
   })
 )
