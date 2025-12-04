@@ -17,7 +17,7 @@ export default class ProductsController {
   }
 
   async store({ request, response }: HttpContext) {
-    const payload = request.only(['name', 'description', 'price', 'stock'])
+    const payload = request.only(['name', 'description', 'price', 'stock', 'type'])
     const product = await Product.create(payload)
 
     const images = request.files('images', {
@@ -59,7 +59,7 @@ async edit({ params, view }: HttpContext) {
   async update({ params, request, response }: HttpContext) {
     const product = await Product.findOrFail(params.id)
 
-    const payload = request.only(['name', 'description', 'price', 'stock'])
+    const payload = request.only(['name', 'description', 'price', 'stock', 'type'])
 
     const images = request.files('images', {
       size: '2mb',

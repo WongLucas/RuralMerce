@@ -16,6 +16,9 @@ export default class Product extends BaseModel {
   declare name: string
 
   @column()
+  declare type: string | null
+
+  @column()
   declare description: string
 
   @column()

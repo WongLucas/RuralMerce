@@ -68,6 +68,17 @@
                 value: old('stock') || product.stock
               })
             </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Tipo do Item</label>
+              <select name="type" class="w-full bg-[#1a1213] text-gray-200 border border-white/10 rounded-lg p-3 outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400/30 transition-all">
+                <option value="Passive" {{ product.type == 'Passive' ? 'selected' : '' }}>Passivo (Passive)</option>
+                <option value="Active" {{ product.type == 'Active' ? 'selected' : '' }}>Ativo (Active)</option>
+                <option value="Familiar" {{ product.type == 'Familiar' ? 'selected' : '' }}>Familiar</option>
+                <option value="Trinket" {{ product.type == 'Trinket' ? 'selected' : '' }}>Trinket</option>
+              </select>
+            </div>
+
           </div>
 
           {{-- SEÇÃO DE IMAGENS --}}
