@@ -6,10 +6,30 @@ import app from '@adonisjs/core/services/app'
 import { cuid } from '@adonisjs/core/helpers'
 
 export default class ProductsController {
-  async index({ view }: HttpContext) {
-    // PRELOAD: Carrega os produtos JÁ com as imagens para evitar queries extras
-    const products = await Product.query().preload('images')
-    return view.render('pages/products/index', { products })
+  public async index({ view, request }: HttpContext) {
+    const page = request.input('page', 1)
+    const limit = 10
+    const filterType = request.input('type', 'All')
+
+    const query = Product.query().preload('images').orderBy('created_at', 'desc')
+
+    if (filterType && filterType !== 'All') {
+      query.where('type', filterType)
+    }
+
+    // .paginate(page, limit) retorna um objeto com meta-dados (total, lastPage, etc)
+    const products = await query.paginate(page, limit)
+
+    // Configura a URL base para os links de paginação manterem o filtro atual
+    products.baseUrl('/products')
+    products.queryString({ type: filterType })
+
+    // Se for AJAX, retorna o partial da tabela completa (com paginação)
+    if (request.header('X-Requested-With') === 'XMLHttpRequest') {
+      return view.render('components/layout/partials/products_table', { products, filterType })
+    }
+
+    return view.render('pages/products/index', { products, filterType })
   }
 
   async create({ view }: HttpContext) {
