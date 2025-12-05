@@ -4,20 +4,34 @@
 
       {{-- 1. LOGO --}}
       <div class="shrink-0 flex items-center">
-        <a href="{{ route('index') }}" class="text-2xl font-bold text-white tracking-wide">
-          Cain<span class="text-red-500">Store</span>
+        <a href="{{ route('index') }}" class="text-2xl font-bold text-white tracking-wide hover:opacity-80 transition">
+          Cain<span class="text-[#bd4044]">Store</span>
         </a>
       </div>
 
       {{-- 2. NAVEGAÇÃO CENTRAL --}}
       <div class="hidden md:block">
         <nav>
-          <ul class="flex space-x-4">
+          <ul class="flex space-x-1 items-center">
             @!component('components/navLink', { href: route('index'), text: 'Início' })
-            @!component('components/navLink', { href: route('product.index'), text: 'Produtos' })
-            {{-- Destaque visual para ofertas --}}
+
+            {{-- Lógica Inteligente: Se for Admin, manda para a tabela de gestão. Se não, manda para a vitrine (se tiver rota separada) --}}
+            @if(auth.user && auth.user.isAdmin)
+              <li>
+                <a href="{{ route('product.index') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Painel Admin
+                </a>
+              </li>
+            @else
+              @!component('components/navLink', { href: route('product.index'), text: 'Loja' })
+            @end
+
             <li>
-              <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-red-400 hover:text-red-300 transition-colors">
+              <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-[#bd4044] hover:text-[#e05d61] transition-colors">
                 Ofertas
               </a>
             </li>
@@ -28,41 +42,56 @@
       {{-- 3. ÁREA DO USUÁRIO E CARRINHO --}}
       <div class="flex items-center space-x-6">
 
-        {{-- Ícone de Busca (Decorativo) --}}
-        <button class="text-gray-400 hover:text-white transition">
+        {{-- Busca --}}
+        <button class="text-gray-400 hover:text-white transition p-1 rounded-full hover:bg-white/5">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </button>
 
-        {{-- Ícone de Carrinho (Essencial para E-commerce) --}}
-        <a href="#" class="group flex items-center text-gray-400 hover:text-white transition relative">
+        {{-- Carrinho --}}
+        <a href="{{ route('cart.show') }}" class="group flex items-center text-gray-400 hover:text-white transition relative p-1">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
-          {{-- Bolinha de notificação (exemplo estático) --}}
-          <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold group-hover:bg-red-500">2</span>
+          <span class="absolute -top-0.5 -right-0.5 h-4 w-4 bg-[#bd4044] rounded-full flex items-center justify-center text-[10px] text-white font-bold group-hover:bg-red-500 transition shadow-sm">2</span>
         </a>
 
         {{-- Lógica de Autenticação --}}
-        <div class="border-l border-gray-700 pl-6 flex items-center space-x-4">
-          @if(auth?.user)
-            <div class="flex items-center space-x-3">
-              <a href="{{ route('profile.show', {id: auth.user.id}) }}" class="text-sm text-gray-300 hover:text-white font-medium">
-                {{ auth.user.fullName || 'Minha Conta' }}
-              </a>
+        <div class="border-l border-white/10 pl-6 flex items-center space-x-4">
+          @if(auth.user)
+            <div class="flex flex-col items-end">
 
+              {{-- NOME E BADGE --}}
+              <div class="flex items-center gap-2">
+                <a href="{{ route('profile.show', {id: auth.user.id}) }}" class="text-sm text-gray-200 hover:text-white font-medium">
+                  {{ auth.user.fullName }}
+                </a>
+
+                {{-- AQUI ESTÁ A LÓGICA DO ROLE --}}
+                @if(auth.user.isAdmin)
+                  <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#8a2f32] text-white border border-[#bd4044] uppercase tracking-wide shadow-[0_0_10px_rgba(189,64,68,0.3)]">
+                    Admin
+                  </span>
+                @else
+                  <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-gray-700 text-gray-300 border border-gray-600 uppercase tracking-wide">
+                    Cliente
+                  </span>
+                @end
+              </div>
+
+              {{-- Link de Logout pequeno embaixo --}}
               @form({ action: route('logout') })
-                <button type="submit" class="text-xs text-red-400 hover:text-red-300 border border-red-900/30 hover:border-red-500 rounded px-2 py-1 transition">
-                  Sair
+                <button type="submit" class="text-[10px] text-gray-500 hover:text-[#bd4044] transition-colors mt-0.5">
+                  Sair da conta
                 </button>
               @end
             </div>
           @else
-            <a href="{{ route('login.create') }}" class="text-sm text-gray-300 hover:text-white font-medium">
+            <a href="{{ route('login.create') }}" class="text-sm text-gray-300 hover:text-white font-medium transition">
               Entrar
             </a>
-            <a href="{{ route('user.create') }}" class="bg-white text-black px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200 transition shadow-md">
+            <a href="{{ route('user.create') }}" class="bg-white text-black px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200 transition shadow-lg hover:shadow-white/10">
               Cadastrar
             </a>
           @end
