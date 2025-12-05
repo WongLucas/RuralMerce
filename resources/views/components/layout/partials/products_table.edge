@@ -15,11 +15,10 @@
       @each(product in products)
         <tr class="hover:bg-white/5 transition-colors duration-150 group animate-fade-in">
 
-          {{-- 1. Imagem (ALTERADO AQUI) --}}
+          {{-- 1. Imagem --}}
           <td class="px-6 py-4">
             <div class="h-12 w-12 rounded-lg bg-[#1a1213] border border-white/10 overflow-hidden flex items-center justify-center">
               @if(product.images && product.images.length > 0)
-                {{-- USANDO .url AGORA --}}
                 <img
                   src="{{ product.images[0].url }}"
                   alt="{{ product.name }}"
@@ -62,7 +61,7 @@
             @end
           </td>
 
-          {{-- 5. Ações --}}
+          {{-- 5. Ações (ALTERADO AQUI) --}}
           <td class="px-6 py-4 text-right">
             <div class="flex items-center justify-end gap-3">
 
@@ -74,9 +73,18 @@
                 </a>
               @end
 
-              @form({ action: route('cart.add', { id: product.id })})
-                <button type="submit" class="bg-white/5 hover:bg-green-600/20 text-green-500 hover:text-green-300 border border-white/10 hover:border-green-500/50 px-3 py-1 rounded text-xs font-bold transition-all uppercase tracking-wide">
-                  Comprar
+              {{-- LÓGICA DO BOTÃO --}}
+              @if(product.stock > 0)
+                {{-- Botão Normal --}}
+                @form({ action: route('cart.add', { id: product.id })})
+                  <button type="submit" class="bg-white/5 hover:bg-green-600/20 text-green-500 hover:text-green-300 border border-white/10 hover:border-green-500/50 px-3 py-1 rounded text-xs font-bold transition-all uppercase tracking-wide">
+                    Comprar
+                  </button>
+                @end
+              @else
+                {{-- Botão Desabilitado (Cinza e sem clique) --}}
+                <button disabled class="bg-white/5 text-gray-600 border border-white/5 px-3 py-1 rounded text-xs font-bold uppercase tracking-wide cursor-not-allowed opacity-50">
+                  Indisponível
                 </button>
               @end
 

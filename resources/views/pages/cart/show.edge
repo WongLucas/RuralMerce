@@ -1,99 +1,157 @@
-@layout.app()
+@layout.app({ title: 'Meu Baú' })
   @slot('main')
 
-    <div class="max-w-4xl mx-auto mt-10">
-      <h1 class="text-3xl font-bold mb-6 text-gray-800">Meu Carrinho (The Chest)</h1>
+    <div class="py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+
+      <h1 class="text-3xl font-bold text-gray-100 mb-8 flex items-center gap-3">
+        <span>📦</span> Meu Inventário
+      </h1>
 
       @if(cart && cart.items.length > 0)
+        <div class="flex flex-col lg:flex-row gap-8">
 
-        <div class="bg-white shadow-md rounded my-6 overflow-x-auto">
-          <table class="min-w-full w-full table-auto">
-            <thead>
-              <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                <th class="py-3 px-6 text-left">Produto</th>
-                <th class="py-3 px-6 text-center">Preço Unit.</th>
-                <th class="py-3 px-6 text-center">Qtd</th>
-                <th class="py-3 px-6 text-center">Subtotal</th>
-                <th class="py-3 px-6 text-center">Ações</th> {{-- Adicionei este cabeçalho --}}
-              </tr>
-            </thead>
-            <tbody class="text-gray-600 text-sm font-light">
+          {{-- LISTA DE ITENS --}}
+          <div class="flex-1 bg-[#2f2425] rounded-xl border border-white/5 overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead class="bg-[#22191a] text-gray-400 text-xs uppercase tracking-wider">
+                  <tr>
+                    <th class="px-6 py-4">Item</th>
+                    <th class="px-6 py-4 text-center">Qtd</th>
+                    <th class="px-6 py-4 text-right">Total</th>
+                    <th class="px-6 py-4"></th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                  @each(item in cart.items)
+                    <tr class="hover:bg-white/5 transition group">
 
-              @each(item in cart.items)
-                {{-- AQUI ESTAVA O ERRO: Faltava abrir o TR --}}
-                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                      {{-- Produto --}}
+                      <td class="px-6 py-4">
+                        <div class="flex items-center gap-4">
+                          {{-- Imagem --}}
+                          <div class="h-16 w-16 rounded bg-[#1a1213] border border-white/10 shrink-0 flex items-center justify-center overflow-hidden">
+                            @if(item.product.images && item.product.images.length > 0)
+                              <img src="{{ item.product.images[0].url }}" class="h-full w-full object-cover">
+                            @else
+                              <span class="text-xs text-gray-600">Sem img</span>
+                            @end
+                          </div>
 
-                  {{-- Coluna 1: Nome do Produto --}}
-                  <td class="py-3 px-6 text-left whitespace-nowrap">
-                    <span class="font-medium">{{ item.product.name }}</span>
-                  </td>
+                          {{-- Nome e Preço Unitário --}}
+                          <div>
+                            <a href="{{ route('product.show', [item.product.id]) }}" class="text-gray-200 font-bold hover:text-[#d4af37] transition">
+                              {{ item.product.name }}
+                            </a>
+                            <p class="text-xs text-gray-500 mt-1">
+                              Unit: R$ {{ item.product.price }}
+                            </p>
+                            @if(item.product.stock < 5)
+                                <p class="text-[10px] text-red-400 mt-1">Restam apenas {{ item.product.stock }}!</p>
+                            @end
+                          </div>
+                        </div>
+                      </td>
 
-                  {{-- Coluna 2: Preço --}}
-                  <td class="py-3 px-6 text-center">
-                    R$ {{ item.product.price }}
-                  </td>
+                      {{-- Quantidade (Update Form) --}}
+                      <td class="px-6 py-4">
+                        @form({
+                          action: route('cart.update', { id: item.id }, { qs: { _method: 'PUT' } }),
+                          method: 'POST',
+                          class: 'flex justify-center'
+                        })
 
-                  {{-- Coluna 3: Form de Atualizar Quantidade --}}
-                  <td class="py-3 px-6 text-center">
-                    @form({action: route('cart.update', { id: item.id }, { qs: {_method: 'PUT'} })})
-                      <input type="number" name="quantity" value="{{ item.quantity }}" min="0" class="w-16 text-center border border-gray-300 rounded p-1" />
+                          <div class="flex items-center border border-white/10 rounded-lg bg-[#1a1213] overflow-hidden">
 
-                      <button type="submit" class="text-xs bg-blue-100 text-blue-600 hover:bg-blue-200 px-2 py-1 rounded">
-                        Atualizar
-                      </button>
-                    @end
-                  </td>
+                            {{-- Botão Menos --}}
+                            <button type="submit" name="quantity" value="{{ item.quantity - 1 }}" class="px-3 py-2 text-gray-400 hover:text-white hover:bg-white/5 transition">
+                              -
+                            </button>
 
-                  {{-- Coluna 4: Subtotal --}}
-                  <td class="py-3 px-6 text-center font-bold">
-                     R$ {{ (item.product.price * item.quantity).toFixed(2) }}
-                  </td>
+                            <input type="number"
+                                  value="{{ item.quantity }}"
+                                  class="w-12 bg-transparent text-center text-gray-200 text-sm focus:outline-none m-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  readonly
+                            >
 
-                  {{-- Coluna 5: Remover --}}
-                  <td class="py-3 px-6 text-center">
-                    @form({
-                      action: route('cart.remove', { id: item.id }, { qs: { _method: 'DELETE'}}),
-                    })
-                      <button type="submit" class="text-red-500 hover:text-red-700" title="Remover item">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    @end
-                  </td>
+                            {{-- Botão Mais --}}
+                            <button type="submit" name="quantity" value="{{ item.quantity + 1 }}" class="px-3 py-2 text-gray-400 hover:text-white hover:bg-white/5 transition">
+                              +
+                            </button>
 
-                </tr> {{-- Fechamento do TR --}}
-              @end
+                          </div>
 
-              {{-- Linha do Total Geral --}}
-              <tr class="bg-gray-50 font-bold text-gray-800">
-                <td colspan="4" class="py-4 px-6 text-right text-lg">TOTAL:</td>
-                <td class="py-4 px-6 text-center text-lg text-green-600">
-                  R$ {{ total.toFixed(2) }}
-                </td>
-              </tr>
+                        @end
+                      </td>
 
-            </tbody>
-          </table>
-        </div>
+                      {{-- Subtotal --}}
+                      <td class="px-6 py-4 text-right">
+                        <span class="text-[#d4af37] font-mono font-medium">
+                          R$ {{ (item.product.price * item.quantity).toFixed(2) }}
+                        </span>
+                      </td>
 
-        {{-- Botões de Ação --}}
-        <div class="flex justify-between items-center mt-6">
-          <a href="{{ route('product.index') }}" class="text-blue-600 hover:underline">
-            &larr; Continuar a comprar
-          </a>
+                      {{-- Remover --}}
+                      <td class="px-6 py-4 text-right">
+                        <form action="{{ route('cart.remove', { id: item.id }, { qs: { _method: 'DELETE' } }) }}" method="POST">
+                          {{ csrfField() }}
+                          <button type="submit" class="text-gray-500 hover:text-red-400 transition" title="Remover item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </form>
+                      </td>
 
-          <button class="bg-green-600 text-white font-bold py-3 px-6 rounded hover:bg-green-700 transition">
-            Finalizar Compra
-          </button>
+                    </tr>
+                  @end
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {{-- RESUMO DO PEDIDO --}}
+          <div class="lg:w-80">
+            <div class="bg-[#2f2425] rounded-xl border border-white/5 p-6 shadow-2xl sticky top-4">
+              <h3 class="text-lg font-bold text-gray-100 mb-6 border-b border-white/5 pb-4">Resumo</h3>
+
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-gray-400 text-sm">Subtotal</span>
+                <span class="text-gray-200 font-mono">R$ {{ total }}</span>
+              </div>
+
+              <div class="flex justify-between items-center mb-8">
+                <span class="text-gray-400 text-sm">Frete</span>
+                <span class="text-green-400 text-xs font-bold uppercase">Grátis</span>
+              </div>
+
+              <div class="flex justify-between items-center mb-8 pt-4 border-t border-white/5">
+                <span class="text-white font-bold">Total</span>
+                <span class="text-2xl text-[#d4af37] font-mono font-bold">R$ {{ total }}</span>
+              </div>
+
+              <a href="#" class="block w-full text-center bg-linear-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-green-900/20 transition transform hover:-translate-y-0.5">
+                FINALIZAR COMPRA
+              </a>
+
+              <a href="{{ route('product.index') }}" class="block w-full text-center text-gray-500 hover:text-white text-sm mt-4 underline decoration-gray-500/30">
+                Continuar comprando
+              </a>
+            </div>
+          </div>
+
         </div>
 
       @else
-        <div class="text-center py-10 bg-gray-100 rounded">
-          <p class="text-gray-500 text-xl mb-4">O seu carrinho está vazio...</p>
-          <a href="{{ route('product.index') }}"
-             class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
-            Ver Produtos
+        {{-- CARRINHO VAZIO --}}
+        <div class="text-center py-20 bg-[#2f2425] rounded-xl border border-white/5">
+          <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+            🕸️
+          </div>
+          <h2 class="text-2xl font-bold text-gray-200 mb-2">Seu baú está vazio</h2>
+          <p class="text-gray-500 mb-8">Parece que você ainda não coletou nenhum item.</p>
+          <a href="{{ route('product.index') }}" class="inline-block bg-[#8a2f32] hover:bg-[#a3383c] text-white px-8 py-3 rounded-lg font-bold transition shadow-lg hover:shadow-red-900/20">
+            Explorar Itens
           </a>
         </div>
       @end

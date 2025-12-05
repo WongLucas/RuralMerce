@@ -28,10 +28,10 @@ router.group(() => {
   router.post('/logout', [SessionController, 'destroy']).as('logout')
 
   // Carrinho (Só quem tá logado compra)
-  router.post('/cart/add/:id', [CartsController, 'add']).as('cart.add')
   router.get('/cart', [CartsController, 'show']).as('cart.show')
-  router.put('/cart/item/:id/update', [CartsController, 'update']).as('cart.update')
-  router.delete('/cart/item/:id/delete', [CartsController, 'remove']).as('cart.remove')
+  router.post('/cart/add/:id', [CartsController, 'add']).as('cart.add')
+  router.put('/cart/update/:id', [CartsController, 'update']).as('cart.update')
+  router.delete('/cart/remove/:id', [CartsController, 'remove']).as('cart.remove')
 
   // Perfil (Editar o próprio perfil)
   router.get('/profile/:id', [ProfilesController, 'show']).as('profile.show')
@@ -40,6 +40,7 @@ router.group(() => {
 
   // Adicionar ou remover estoque
   router.post('/products/:product_id/stock', [StockMovementsController, 'store']).as('stock.store')
+
 }).use(middleware.auth())
 
 
