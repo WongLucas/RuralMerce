@@ -3,16 +3,29 @@
 
     <div class="py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
 
-      <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-100">Produtos</h1>
-        {{-- Botão criar produto aqui... --}}
+      {{-- Cabeçalho --}}
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-100 tracking-tight">Produtos</h1>
+          <p class="text-gray-400 text-sm mt-1">Confira nosso catálogo.</p>
+        </div>
+
+        @if(auth.user && auth.user.isAdmin)
+          <a href="{{ route('product.create') }}"
+             class="inline-flex items-center bg-linear-to-r from-[#8a2f32] to-[#5e2124] text-white px-5 py-2.5 rounded-lg hover:from-[#a3383c] hover:to-[#7a2b2e] shadow-lg hover:shadow-red-900/20 transition-all font-medium text-sm">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+             </svg>
+             Novo Produto
+          </a>
+        @end
       </div>
 
       {{-- FILTROS --}}
-      <div class="mb-6 flex gap-2">
+      <div class="mb-6 flex gap-2 overflow-x-auto pb-2 sm:pb-0">
         @each(type in ['All', 'Active', 'Passive'])
           <button onclick="loadData(1, '{{ type }}')"
-            class="filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all border
+            class="filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all border whitespace-nowrap
             {{ (filterType || 'All') == type ? 'bg-[#8a2f32] text-white border-[#8a2f32]' : 'text-gray-400 border-white/10 hover:bg-white/5' }}"
             data-type="{{ type }}">
             {{ type == 'All' ? 'Todos' : type }}
@@ -20,64 +33,11 @@
         @end
       </div>
 
-      {{-- CONTAINER GERAL (Tabela + Paginação) --}}
+      {{-- CONTAINER DA TABELA --}}
       <div id="table-container" class="bg-[#2f2425] rounded-xl shadow-2xl border border-white/5 overflow-hidden min-h-[400px]">
          @include('components/layout/partials/products_table')
       </div>
 
     </div>
-
-    <script>
-      // Função unificada para carregar dados (Filtro ou Paginação)
-      async function loadData(page, type) {
-        const container = document.getElementById('table-container');
-        const buttons = document.querySelectorAll('.filter-btn');
-
-        // 1. Loading UI
-        container.style.opacity = '0.5';
-        container.style.pointerEvents = 'none'; // Previne cliques duplos
-
-        // 2. Atualiza visual dos botões de filtro
-        buttons.forEach(btn => {
-          if (btn.dataset.type === type) {
-             btn.className = "filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all border bg-[#8a2f32] text-white border-[#8a2f32]";
-          } else {
-             btn.className = "filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all border text-gray-400 border-white/10 hover:bg-white/5";
-          }
-        });
-
-        try {
-          // 3. Request AJAX
-          const response = await fetch(`?page=${page}&type=${type}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-          });
-
-          if (!response.ok) throw new Error('Erro na rede');
-
-          // 4. Troca o HTML
-          const html = await response.text();
-          container.innerHTML = html;
-
-          // 5. Atualiza URL do navegador (Histórico)
-          const newUrl = `?page=${page}&type=${type}`;
-          window.history.pushState({path: newUrl}, '', newUrl);
-
-          // 6. Scroll suave para o topo da tabela (opcional, bom para UX na paginação)
-          // container.scrollIntoView({ behavior: 'smooth' });
-
-        } catch (error) {
-          console.error(error);
-          alert('Não foi possível carregar os dados.');
-        } finally {
-          container.style.opacity = '1';
-          container.style.pointerEvents = 'auto';
-        }
-      }
-
-      // Opcional: Permitir voltar pelo botão "Voltar" do navegador
-      window.onpopstate = function(event) {
-         window.location.reload();
-      };
-    </script>
   @end
 @end
