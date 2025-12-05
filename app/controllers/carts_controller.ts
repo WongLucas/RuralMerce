@@ -50,7 +50,7 @@ export default class CartsController {
     }
 
     session.flash('notification', { type: 'success', message: 'Item adicionado ao baú!' })
-    return response.redirect().back()
+    return response.redirect().toRoute('cart.show', {id: cart.id})
   }
 
   // --- EXIBIR CARRINHO ---
