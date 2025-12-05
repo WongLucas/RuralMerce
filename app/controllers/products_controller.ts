@@ -64,6 +64,11 @@ export default class ProductsController {
     const product = await Product.findOrFail(params.id)
     await product.load('images')
 
+    await product.load('stockMovements', (query) => {
+      query.orderBy('created_at', 'desc').limit(5)
+      query.preload('user') // Opcional: Para mostrar quem fez a ação
+    })
+
     return view.render('pages/products/show', { product })
   }
 

@@ -4,6 +4,7 @@ import { BaseModel, column, beforeDelete } from '@adonisjs/lucid/orm'
 import { hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import ProductImage from '#models/product_image'
+import StockMovement from '#models/stock_movement'
 
 import app from '@adonisjs/core/services/app'
 import fs from 'node:fs/promises'
@@ -32,6 +33,9 @@ export default class Product extends BaseModel {
 
   @hasMany(() => ProductImage)
   declare images: HasMany<typeof ProductImage>
+
+  @hasMany(() => StockMovement)
+  declare stockMovements: HasMany<typeof StockMovement>
 
   @beforeDelete()
   static async deleteAttachedFiles(product: Product) {

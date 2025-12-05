@@ -6,6 +6,7 @@ import SessionController from '#controllers/session_controller'
 import ProfilesController from '#controllers/profiles_controller'
 import ProductsController from '#controllers/products_controller'
 import CartsController from '#controllers/carts_controller'
+import StockMovementsController from '#controllers/stock_movements_controller'
 
 
 router.get('/', async ({ auth, view }) =>{
@@ -37,6 +38,8 @@ router.group(() => {
   router.get('/profile/edit/:id', [ProfilesController, 'edit']).as('profile.edit')
   router.put('/profile.edit/:id', [ProfilesController, 'update']).as('profile.update')
 
+  // Adicionar ou remover estoque
+  router.post('/products/:product_id/stock', [StockMovementsController, 'store']).as('stock.store')
 }).use(middleware.auth())
 
 

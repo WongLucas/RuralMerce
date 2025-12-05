@@ -38,7 +38,7 @@
           {{-- Grid de Layout --}}
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            {{-- COLUNA 1: Galeria (ALTERADO AQUI) --}}
+            {{-- COLUNA 1: Galeria --}}
             <div class="lg:col-span-2">
               <h3 class="text-sm font-medium text-gray-400 mb-3 uppercase">Galeria</h3>
               <div class="bg-[#1a1213] rounded-xl p-4 border border-white/5">
@@ -46,7 +46,6 @@
                   <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     @each(image in product.images)
                       <div class="group relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-[#2f2425]">
-                        {{-- USANDO image.url AGORA --}}
                         <img
                           src="{{ image.url }}"
                           alt="{{ product.name }}"
@@ -65,9 +64,85 @@
 
             {{-- COLUNA 2: Detalhes --}}
             <div class="space-y-6">
-              {{-- Estoque --}}
+
+              {{--
+                  === NOVO PAINEL DE ESTOQUE (ADMIN) ===
+                  Inserido aqui conforme solicitado
+              --}}
+              @if(auth.user && auth.user.isAdmin)
+                <div class="bg-[#22191a] p-6 rounded-xl border border-white/10 shadow-inner">
+                  <h3 class="text-gray-200 font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#d4af37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Gerenciar Estoque
+                  </h3>
+
+                  {{-- USANDO SEU COMPONENTE @FORM --}}
+                  @form({
+                    action: route('stock.store', { product_id: product.id }),
+                    method: 'POST',
+                    class: 'space-y-4'
+                  })
+
+                    <div class="grid grid-cols-2 gap-4">
+                      {{-- Ação --}}
+                      <div>
+                        <label class="block text-[10px] text-gray-500 uppercase mb-1 font-bold">Ação</label>
+                        <select name="type" class="w-full bg-[#1a1213] text-gray-200 border border-white/10 rounded px-3 py-2 text-xs focus:border-[#d4af37] outline-none">
+                          <option value="IN">Entrada (+)</option>
+                          <option value="OUT">Saída (-)</option>
+                        </select>
+                      </div>
+
+                      {{-- Quantidade --}}
+                      <div>
+                        <label class="block text-[10px] text-gray-500 uppercase mb-1 font-bold">Qtd</label>
+                        <input type="number" name="quantity" min="1" required class="w-full bg-[#1a1213] text-gray-200 border border-white/10 rounded px-3 py-2 text-xs focus:border-[#d4af37] outline-none" placeholder="0">
+                      </div>
+                    </div>
+
+                    {{-- Motivo --}}
+                    <div>
+                      <label class="block text-[10px] text-gray-500 uppercase mb-1 font-bold">Motivo</label>
+                      <input type="text" name="reason" class="w-full bg-[#1a1213] text-gray-200 border border-white/10 rounded px-3 py-2 text-xs focus:border-[#d4af37] outline-none" placeholder="Ex: Reposição...">
+                    </div>
+
+                    <button type="submit" class="w-full bg-white/5 hover:bg-white/10 text-gray-200 border border-white/20 py-2 rounded text-xs font-bold transition-colors uppercase">
+                      Atualizar
+                    </button>
+                  @end
+
+                  {{-- HISTÓRICO DE MOVIMENTAÇÕES --}}
+                  <div class="mt-4 pt-4 border-t border-white/5">
+                      <p class="text-[10px] text-gray-500 mb-2 uppercase">Últimos registros:</p>
+
+                      <div class="space-y-1">
+                        @if(product.stockMovements && product.stockMovements.length > 0)
+                          @each(move in product.stockMovements)
+                            <div class="flex justify-between items-center text-xs bg-[#1a1213] p-1.5 rounded border border-white/5">
+                              <div class="flex items-center gap-2">
+                                @if(move.type == 'IN')
+                                  <span class="text-green-400 font-bold bg-green-900/20 px-1 rounded text-[10px]">+ IN</span>
+                                @else
+                                  <span class="text-red-400 font-bold bg-red-900/20 px-1 rounded text-[10px]">- OUT</span>
+                                @end
+                                <span class="text-gray-400 truncate max-w-20" title="{{ move.reason }}">{{ move.reason || '-' }}</span>
+                              </div>
+                              <span class="text-gray-300 font-mono">{{ move.quantity }} un.</span>
+                            </div>
+                          @end
+                        @else
+                          <p class="text-gray-600 text-xs italic text-center py-2">Sem histórico.</p>
+                        @end
+                      </div>
+                  </div>
+                </div>
+              @end
+
+              {{-- Estoque Atual (Card Visual) --}}
               <div class="bg-[#1a1213] p-4 rounded-xl border border-white/5">
-                <span class="block text-gray-500 text-xs uppercase mb-1">Disponibilidade</span>
+                <span class="block text-gray-500 text-xs uppercase mb-1">Disponibilidade Atual</span>
                 @if(auth.user && auth.user.isAdmin)
                    <span class="text-xl font-mono text-gray-200">{{ product.stock }} unidades</span>
                 @else
