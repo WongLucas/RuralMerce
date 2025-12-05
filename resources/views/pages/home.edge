@@ -1,3 +1,120 @@
-@layout.app()
-  <h1>Items</h1>
+@layout.app({ title: 'Bem-vindo ao Porão' })
+  @slot('main')
+
+    <div class="relative bg-[#150f10] overflow-hidden">
+
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-linear-to-b from-[#bd4044]/10 to-transparent opacity-50 blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 relative z-10 text-center">
+
+        <h1 class="text-5xl md:text-7xl font-extrabold text-gray-100 tracking-tight mb-6 drop-shadow-2xl">
+          Descenda ao <span class="text-[#bd4044]">Porão</span>
+        </h1>
+
+        <p class="mt-4 text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          Colete itens, fique mais forte e enfrente seus medos.
+          O mercado mais sombrio da internet está aberto para negócios.
+        </p>
+
+        <div class="mt-10 flex justify-center gap-4">
+          <a href="{{ route('product.index') }}"
+             class="px-8 py-4 bg-[#8a2f32] hover:bg-[#a3383c] text-white font-bold rounded-lg shadow-[0_0_20px_rgba(138,47,50,0.4)] hover:shadow-[0_0_30px_rgba(138,47,50,0.6)] transition-all transform hover:-translate-y-1 text-lg">
+            Explorar Itens
+          </a>
+
+          {{-- Só mostra botão de admin se for admin --}}
+          @if(auth.user && auth.user.isAdmin)
+            <a href="{{ route('product.create') }}"
+               class="px-8 py-4 bg-transparent border border-white/10 hover:bg-white/5 text-gray-300 font-bold rounded-lg transition-colors">
+              Criar Novo Item
+            </a>
+          @end
+        </div>
+
+      </div>
+    </div>
+
+    {{-- DESTAQUES / CATEGORIAS --}}
+    <div class="bg-[#1a1213] border-t border-white/5 py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-16">
+          <h2 class="text-3xl font-bold text-gray-100 mb-2">Escolha seu Destino</h2>
+          <div class="h-1 w-20 bg-[#d4af37] mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          {{-- Card 1: Active Items --}}
+          <a href="{{ route('product.index', { qs: { type: 'Active' } }) }}" class="group relative overflow-hidden rounded-2xl bg-[#2f2425] border border-white/5 hover:border-[#d4af37]/50 transition duration-500">
+            <div class="absolute inset-0 bg-linear-to-t from-black/80 to-transparent z-10"></div>
+
+            {{-- Background abstrato ou imagem --}}
+            <div class="h-64 w-full bg-[url('https://static.wikia.nocookie.net/bindingofisaac_gamepedia/images/9/93/D6_Icon.png')] bg-contain bg-center bg-no-repeat opacity-20 group-hover:opacity-40 transition duration-500 transform group-hover:scale-110"></div>
+
+            <div class="absolute bottom-0 left-0 p-8 z-20">
+              <h3 class="text-2xl font-bold text-orange-400 mb-2 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Active Items
+              </h3>
+              <p class="text-gray-400 group-hover:text-gray-200 transition">Itens de uso único ou recarregáveis. Use a barra de espaço com sabedoria.</p>
+            </div>
+          </a>
+
+          {{-- Card 2: Passive Items --}}
+          <a href="{{ route('product.index', { qs: { type: 'Passive' } }) }}" class="group relative overflow-hidden rounded-2xl bg-[#2f2425] border border-white/5 hover:border-gray-400/50 transition duration-500">
+            <div class="absolute inset-0 bg-linear-to-t from-black/80 to-transparent z-10"></div>
+
+            {{-- Background abstrato --}}
+            <div class="h-64 w-full bg-[url('https://static.wikia.nocookie.net/bindingofisaac_gamepedia/images/1/1a/Brimstone_Icon.png')] bg-contain bg-center bg-no-repeat opacity-20 group-hover:opacity-40 transition duration-500 transform group-hover:scale-110"></div>
+
+            <div class="absolute bottom-0 left-0 p-8 z-20">
+              <h3 class="text-2xl font-bold text-gray-300 mb-2 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                Passive Items
+              </h3>
+              <p class="text-gray-400 group-hover:text-gray-200 transition">Melhorias permanentes de status e modificadores de lágrimas.</p>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+
+    {{-- FEATURES / BANNER INFERIOR --}}
+    <div class="py-16 px-4 border-t border-white/5 bg-[#150f10]">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+
+        <div class="p-6">
+          <div class="w-12 h-12 bg-[#2f2425] rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10">
+            <span class="text-2xl">📦</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-200 mb-2">Entrega Rápida</h3>
+          <p class="text-sm text-gray-500">Seus itens chegam antes que a Mãe perceba.</p>
+        </div>
+
+        <div class="p-6">
+          <div class="w-12 h-12 bg-[#2f2425] rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10">
+            <span class="text-2xl">🔒</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-200 mb-2">Pagamento Seguro</h3>
+          <p class="text-sm text-gray-500">Aceitamos moedas, chaves e corações.</p>
+        </div>
+
+        <div class="p-6">
+          <div class="w-12 h-12 bg-[#2f2425] rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10">
+            <span class="text-2xl">💎</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-200 mb-2">Raridades</h3>
+          <p class="text-sm text-gray-500">Encontre itens da sala secreta e do anjo.</p>
+        </div>
+
+      </div>
+    </div>
+
+  @end
 @end

@@ -118,7 +118,7 @@ export default class CartsController {
     const user = auth.user!
 
     // Otimização: Delete direto com verificação de segurança em uma única query
-    const deletedCount = await CartItem.query()
+    await CartItem.query()
         .where('id', params.id)
         .whereHas('cart', (q) => q.where('user_id', user.id))
         .delete()
@@ -132,8 +132,6 @@ export default class CartsController {
     const trx = await db.transaction()
 
     try {
-      // 1. CORREÇÃO: Busca direta no Cart passando { client: trx }
-      // Isso substitui o user.related('cart').query().useTransaction(trx)
       const cart = await Cart.query({ client: trx })
         .where('userId', user.id)
         .preload('items')
@@ -141,7 +139,6 @@ export default class CartsController {
 
       if (cart && cart.items.length > 0) {
 
-        // 2. Loop de Decremento Direto (Sem IFs, Sem leitura de produto)
         for (const item of cart.items) {
           await Product.query({ client: trx }) // Passa trx aqui também
             .where('id', item.productId)
