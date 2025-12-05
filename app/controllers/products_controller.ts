@@ -8,7 +8,7 @@ import { cuid } from '@adonisjs/core/helpers'
 export default class ProductsController {
   public async index({ view, request }: HttpContext) {
     const page = request.input('page', 1)
-    const limit = 10
+    const limit = 20
     const filterType = request.input('type', 'All')
 
     const query = Product.query().preload('images').orderBy('created_at', 'desc')

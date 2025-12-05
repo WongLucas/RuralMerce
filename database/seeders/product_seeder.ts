@@ -8,7 +8,6 @@ export default class extends BaseSeeder {
     const filePath = app.makePath('isaac_items_full.json')
 
     try {
-      // 2. Lê o arquivo
       const fileContent = await fs.readFile(filePath, 'utf-8')
       const items = JSON.parse(fileContent)
 
@@ -16,34 +15,35 @@ export default class extends BaseSeeder {
 
       for (const item of items) {
 
-        // Ajuste aqui as chaves conforme o seu JSON do Python (Name, Description, Effect, etc)
-        // O Scraper geralmente retorna chaves com Maiúscula (ex: "Name", "Type")
-
-        await Product.updateOrCreate(
-          { name: item.Name }, // Critério de busca (evita duplicar se rodar 2x)
+        // 1. Cria ou Atualiza o Produto
+        const product = await Product.updateOrCreate(
+          { name: item.Name },
           {
             description: item.Description || item.Effect || 'Sem descrição',
-            type: item.type, // 'Active' ou 'Passive' vindo do scraper
-
-            // Gerando dados fictícios para a loja
+            type: item.type || 'Passive',
             price: this.getRandomPrice(),
             stock: 10
           }
         )
+
+        // 2. CORREÇÃO AQUI: A chave no JSON é "image_url" (vinda do Scraper)
+        if (item.image_url) {
+          await product.related('images').updateOrCreate(
+            { path: item.image_url }, // Busca pela URL exata
+            { path: item.image_url }  // Salva a URL completa no banco
+          )
+        }
       }
 
       console.log('✅ Importação concluída com sucesso!')
 
     } catch (error) {
-      console.error('❌ Erro ao importar o JSON. Verifique se o arquivo existe na raiz.', error)
+      console.error('❌ Erro na importação:', error)
     }
   }
 
-  // Função auxiliar para gerar preços "estilo Isaac" (ex: 15.00, 25.50)
   private getRandomPrice() {
-    const min = 5
-    const max = 60
-    const price = Math.random() * (max - min) + min
-    return parseFloat(price.toFixed(2))
+    // Math.random() simplificado
+    return parseFloat((Math.random() * (60 - 5) + 5).toFixed(2))
   }
 }
