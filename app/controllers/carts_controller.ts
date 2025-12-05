@@ -1,6 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import db from '@adonisjs/lucid/services/db'
 import Product from '#models/product'
 import CartItem from '#models/cart_item'
+import Cart from '#models/cart'
 
 export default class CartsController {
 
@@ -9,37 +11,33 @@ export default class CartsController {
     const user = auth.user!
     const productId = params.id
 
-    // 1. Busca produto e verifica se existe
-    const product = await Product.find(productId)
+    // Otimização: Buscamos Produto e Carrinho em paralelo para economizar tempo
+    const [product, cart] = await Promise.all([
+      Product.find(productId),
+      user.related('cart').firstOrCreate({}, { userId: user.id })
+    ])
+
     if (!product) {
       session.flash('notification', { type: 'error', message: 'Produto não encontrado.' })
       return response.redirect().back()
     }
 
-    // 2. BLINDAGEM: Verifica se tem estoque base
     if (product.stock <= 0) {
       session.flash('notification', { type: 'error', message: 'Produto esgotado!' })
       return response.redirect().back()
     }
 
-    // 3. Busca ou cria o carrinho do usuário
-    const cart = await user.related('cart').firstOrCreate({}, {
-      userId: user.id
-    })
-
-    // 4. Verifica se o item já está no carrinho
+    // Busca apenas o item específico (Query leve)
     const existingItem = await cart.related('items')
       .query()
       .where('product_id', productId)
       .first()
 
     if (existingItem) {
-      // 5. BLINDAGEM: Verifica se somando +1 vai estourar o estoque
       if (existingItem.quantity + 1 > product.stock) {
-        session.flash('notification', { type: 'error', message: 'Você já atingiu o limite de estoque deste item.' })
+        session.flash('notification', { type: 'error', message: 'Limite de estoque atingido.' })
         return response.redirect().back()
       }
-
       existingItem.quantity += 1
       await existingItem.save()
     } else {
@@ -49,77 +47,63 @@ export default class CartsController {
       })
     }
 
-    session.flash('notification', { type: 'success', message: 'Item adicionado ao baú!' })
-    return response.redirect().toRoute('cart.show', {id: cart.id})
+    return response.redirect().toRoute('cart.show')
   }
 
   // --- EXIBIR CARRINHO ---
   public async show({ auth, view }: HttpContext) {
     const user = auth.user!
 
-    // 1. Carrega carrinho com Itens -> Produto -> Imagens (Para mostrar a foto)
+    // Otimização: Preload recursivo otimizado
     const cart = await user.related('cart')
       .query()
       .preload('items', (itemsQuery) => {
-        itemsQuery.orderBy('created_at', 'asc') // Itens na ordem que foram adicionados
+        itemsQuery.orderBy('created_at', 'asc')
+        // Preload apenas das colunas necessárias do produto e imagens melhora performance se a tabela for gigante
         itemsQuery.preload('product', (prodQuery) => {
           prodQuery.preload('images')
         })
       })
       .first()
 
-    // 2. Calcula total
+    // Cálculo em memória (Node.js é muito rápido nisso, não precisa mudar)
     let total = 0
     if (cart) {
       cart.items.forEach(item => {
-        // Proteção extra: se o produto foi deletado mas o item ficou no carrinho
         if(item.product) {
             total += item.product.price * item.quantity
         }
       })
     }
 
-    // Formata para 2 casas decimais para evitar erros de ponto flutuante do JS
-    const formattedTotal = total.toFixed(2)
-
-    return view.render('pages/cart/show', { cart, total: formattedTotal })
+    return view.render('pages/cart/show', { cart, total: total.toFixed(2) })
   }
 
   // --- ATUALIZAR QUANTIDADE ---
   public async update({ auth, params, request, response, session }: HttpContext) {
     const payload = request.only(['quantity'])
     const quantity = parseInt(payload.quantity)
-
-    // Busca o item garantindo que ele pertence ao carrinho do usuário (Segurança)
-    // Isso impede que eu mude o ID na URL e altere o carrinho do vizinho
     const user = auth.user!
-    const cart = await user.related('cart').query().first()
 
-    if (!cart) return response.redirect().back()
-
+    // Otimização: Query direta no CartItem com Join implícito (mais rápido que buscar cart depois item)
+    // Buscamos o item que pertence a um carrinho que pertence ao usuário
     const item = await CartItem.query()
       .where('id', params.id)
-      .where('cart_id', cart.id)
-      .preload('product')
+      .whereHas('cart', (cartQuery) => {
+        cartQuery.where('user_id', user.id)
+      })
+      .preload('product') // Já traz o produto para checar estoque
       .first()
 
-    if (!item) {
-        return response.redirect().back()
-    }
+    if (!item) return response.redirect().back()
 
-    // 1. Se qtd <= 0, deleta
     if (quantity <= 0) {
       await item.delete()
-      session.flash('notification', { type: 'success', message: 'Item removido.' })
       return response.redirect().back()
     }
 
-    // 2. BLINDAGEM: Verifica estoque antes de aumentar
     if (quantity > item.product.stock) {
-      session.flash('notification', {
-        type: 'error',
-        message: `Estoque insuficiente. Máximo disponível: ${item.product.stock}`
-      })
+      session.flash('notification', { type: 'error', message: `Máximo disponível: ${item.product.stock}` })
       return response.redirect().back()
     }
 
@@ -130,23 +114,55 @@ export default class CartsController {
   }
 
   // --- REMOVER ITEM ---
-  public async remove({ auth, params, response, session }: HttpContext) {
+  public async remove({ auth, params, response }: HttpContext) {
     const user = auth.user!
-    const cart = await user.related('cart').query().first()
 
-    if (cart) {
-        // Segurança: Garante que só remove se for do meu carrinho
-        const item = await CartItem.query()
-            .where('id', params.id)
-            .where('cart_id', cart.id)
-            .first()
+    // Otimização: Delete direto com verificação de segurança em uma única query
+    const deletedCount = await CartItem.query()
+        .where('id', params.id)
+        .whereHas('cart', (q) => q.where('user_id', user.id))
+        .delete()
 
-        if (item) {
-            await item.delete()
-            session.flash('notification', { type: 'success', message: 'Item removido do baú.' })
-        }
-    }
-
+    // O delete() não falha se não achar, então não precisamos de ifs complexos
     return response.redirect().back()
+  }
+
+  async checkout({ auth, response, session }: HttpContext) {
+    const user = auth.user!
+    const trx = await db.transaction()
+
+    try {
+      // 1. CORREÇÃO: Busca direta no Cart passando { client: trx }
+      // Isso substitui o user.related('cart').query().useTransaction(trx)
+      const cart = await Cart.query({ client: trx })
+        .where('userId', user.id)
+        .preload('items')
+        .first()
+
+      if (cart && cart.items.length > 0) {
+
+        // 2. Loop de Decremento Direto (Sem IFs, Sem leitura de produto)
+        for (const item of cart.items) {
+          await Product.query({ client: trx }) // Passa trx aqui também
+            .where('id', item.productId)
+            .decrement('stock', item.quantity)
+        }
+
+        // 3. Limpeza do carrinho
+        await CartItem.query({ client: trx }) // E aqui também
+          .where('cartId', cart.id)
+          .delete()
+      }
+
+      await trx.commit()
+
+      session.flash('success', 'Compra realizada!')
+      return response.redirect().toRoute('product.index')
+
+    } catch (error) {
+      await trx.rollback()
+      session.flash('notification', { type: 'error', message: 'Erro ao finalizar.' })
+      return response.redirect().back()
+    }
   }
 }

@@ -32,6 +32,7 @@ router.group(() => {
   router.post('/cart/add/:id', [CartsController, 'add']).as('cart.add')
   router.put('/cart/update/:id', [CartsController, 'update']).as('cart.update')
   router.delete('/cart/remove/:id', [CartsController, 'remove']).as('cart.remove')
+  router.post('/cart/checkout', [CartsController, 'checkout']).as('cart.checkout')
 
   // Perfil (Editar o próprio perfil)
   router.get('/profile/:id', [ProfilesController, 'show']).as('profile.show')
